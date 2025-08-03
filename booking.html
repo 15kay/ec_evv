@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Station Booking - Eastern Cape</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .booking-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .booking-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .booking-option.selected {
+            border-color: #10B981;
+            background-color: #F0FDF4;
+        }
+        .time-slot {
+            transition: all 0.2s ease;
+        }
+        .time-slot:hover {
+            background-color: #F3F4F6;
+        }
+        .time-slot.selected {
+            background-color: #10B981;
+            color: white;
+        }
+        .time-slot.unavailable {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            cursor: not-allowed;
+        }
+        .energy-suggestion {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .energy-suggestion:hover {
+            background-color: #F3F4F6;
+        }
+        .energy-suggestion.selected {
+            background-color: #10B981;
+            color: white;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        .progress-step {
+            transition: all 0.3s ease;
+        }
+        .progress-step.active {
+            background-color: #10B981;
+            color: white;
+        }
+        .progress-step.completed {
+            background-color: #10B981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-charging-station text-white text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-gray-900">EC EV Station Booking</h1>
+                        <p class="text-xs text-green-600">Eastern Cape Electric Mobility</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Stations</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition font-semibold">Booking</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Profile</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="progress-step active rounded-full w-10 h-10 flex items-center justify-center font-semibold">1</div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="progress-step rounded-full w-10 h-10 flex items-center justify-center font-semibold bg-gray-300">2</div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="progress-step rounded-full w-10 h-10 flex items-center justify-center font-semibold bg-gray-300">3</div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="progress-step rounded-full w-10 h-10 flex items-center justify-center font-semibold bg-gray-300">4</div>
+            </div>
+            <div class="flex justify-between text-sm text-gray-600">
+                <span>Service Type</span>
+                <span>Energy Needs</span>
+                <span>Time Slot</span>
+                <span>Confirmation</span>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <!-- Step 1: Service Type Selection -->
+            <div id="step1" class="booking-step">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Select Service Type</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Battery Swap Option -->
+                    <div class="booking-option border-2 border-gray-200 rounded-xl p-6" onclick="selectService('swap')">
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-battery-half text-blue-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900">Battery Swap</h4>
+                                <p class="text-sm text-gray-600">Quick battery replacement</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-green-600 mr-2"></i>
+                                <span>3-5 minutes</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-bolt text-green-600 mr-2"></i>
+                                <span>Full charge guaranteed</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-shield-alt text-green-600 mr-2"></i>
+                                <span>Battery health certified</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-lg font-bold text-gray-900">R120</span>
+                            <span class="text-sm text-gray-600">per swap</span>
+                        </div>
+                    </div>
+
+                    <!-- Charging Option -->
+                    <div class="booking-option border-2 border-gray-200 rounded-xl p-6" onclick="selectService('charge')">
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-charging-station text-green-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900">Charging</h4>
+                                <p class="text-sm text-gray-600">Plug-in and charge</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex items-center">
+                                <i class="fas fa-tachometer-alt text-green-600 mr-2"></i>
+                                <span>Up to 150kW DC fast</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-leaf text-green-600 mr-2"></i>
+                                <span>Renewable energy option</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-wifi text-green-600 mr-2"></i>
+                                <span>Free WiFi available</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-lg font-bold text-gray-900">R2.50</span>
+                            <span class="text-sm text-gray-600">per kWh</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Station Selection -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Station</label>
+                    <select id="stationSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <option value="">Choose a charging station</option>
+                        <option value="pe-central">Port Elizabeth Central - 12 bays available</option>
+                        <option value="el-mall">East London Mall - 8 bays available</option>
+                        <option value="gra-univ">Grahamstown University - 4 bays available</option>
+                        <option value="mth-plaza">Mthatha Plaza - 6 bays available</option>
+                        <option value="jeff-bay">Jeffreys Bay Beach - 10 bays available</option>
+                    </select>
+                </div>
+
+                <!-- Vehicle Selection -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Vehicle</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select id="vehicleMake" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select make</option>
+                            <option value="tesla">Tesla</option>
+                            <option value="nissan">Nissan</option>
+                            <option value="hyundai">Hyundai</option>
+                            <option value="bmw">BMW</option>
+                            <option value="audi">Audi</option>
+                            <option value="volkswagen">Volkswagen</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <select id="vehicleModel" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select model</option>
+                            <option value="model3">Model 3</option>
+                            <option value="leaf">Leaf</option>
+                            <option value="kona">Kona</option>
+                            <option value="i3">i3</option>
+                            <option value="e-tron">e-tron</option>
+                            <option value="id4">ID.4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button onclick="nextStep()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Energy Requirements -->
+            <div id="step2" class="booking-step hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Energy Requirements</h3>
+                
+                <!-- Current Battery Level -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Battery Level</label>
+                    <div class="flex items-center space-x-4">
+                        <input type="range" id="currentBattery" min="0" max="100" value="20" class="flex-1">
+                        <span id="currentBatteryDisplay" class="text-lg font-semibold text-green-600 w-16">20%</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <!-- Desired Battery Level -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Desired Battery Level</label>
+                    <div class="flex items-center space-x-4">
+                        <input type="range" id="desiredBattery" min="0" max="100" value="80" class="flex-1">
+                        <span id="desiredBatteryDisplay" class="text-lg font-semibold text-green-600 w-16">80%</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <!-- Energy Needed Calculation -->
+                <div class="bg-blue-50 rounded-xl p-6 mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-gray-900">Energy Needed</h4>
+                        <span id="energyNeeded" class="text-2xl font-bold text-blue-600">0 kWh</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">Battery Capacity:</span>
+                            <span id="batteryCapacity" class="font-semibold ml-2">60 kWh</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Estimated Cost:</span>
+                            <span id="estimatedCost" class="font-semibold ml-2">R0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Energy Suggestions -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-4">Quick Select</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="energy-suggestion border border-gray-200 rounded-lg p-4 text-center" onclick="setEnergyLevel('quick')">
+                            <i class="fas fa-bolt text-yellow-500 text-2xl mb-2"></i>
+                            <p class="font-semibold">Quick Top-up</p>
+                            <p class="text-sm text-gray-600">20% → 50%</p>
+                        </div>
+                        <div class="energy-suggestion border border-gray-200 rounded-lg p-4 text-center" onclick="setEnergyLevel('half')">
+                            <i class="fas fa-battery-half text-blue-500 text-2xl mb-2"></i>
+                            <p class="font-semibold">Half Charge</p>
+                            <p class="text-sm text-gray-600">20% → 70%</p>
+                        </div>
+                        <div class="energy-suggestion border border-gray-200 rounded-lg p-4 text-center" onclick="setEnergyLevel('full')">
+                            <i class="fas fa-battery-full text-green-500 text-2xl mb-2"></i>
+                            <p class="font-semibold">Full Charge</p>
+                            <p class="text-sm text-gray-600">20% → 100%</p>
+                        </div>
+                        <div class="energy-suggestion border border-gray-200 rounded-lg p-4 text-center" onclick="setEnergyLevel('custom')">
+                            <i class="fas fa-sliders-h text-purple-500 text-2xl mb-2"></i>
+                            <p class="font-semibold">Custom</p>
+                            <p class="text-sm text-gray-600">Set your own</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unique Features -->
+                <div class="mb-8">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Enhanced Features</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <input type="checkbox" id="renewableEnergy" class="mr-3">
+                            <div>
+                                <p class="font-medium text-gray-900">Prefer Renewable Energy</p>
+                                <p class="text-sm text-gray-600">Charge when solar/wind energy is available</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <input type="checkbox" id="offPeak" class="mr-3">
+                            <div>
+                                <p class="font-medium text-gray-900">Off-Peak Discount</p>
+                                <p class="text-sm text-gray-600">20% discount between 10PM - 6AM</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <input type="checkbox" id="batteryHealth" class="mr-3">
+                            <div>
+                                <p class="font-medium text-gray-900">Battery Health Check</p>
+                                <p class="text-sm text-gray-600">Free battery diagnostic during charging</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <input type="checkbox" id="notifyReady" class="mr-3">
+                            <div>
+                                <p class="font-medium text-gray-900">Notify When Ready</p>
+                                <p class="text-sm text-gray-600">SMS/App notification when charging complete</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button onclick="previousStep()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <button onclick="nextStep()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Time Slot Selection -->
+            <div id="step3" class="booking-step hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Select Time Slot</h3>
+                
+                <!-- Date Selection -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                    <input type="date" id="bookingDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+
+                <!-- Time Slots -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-4">Available Time Slots</label>
+                    <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('08:00')">
+                            <p class="font-medium">08:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('09:00')">
+                            <p class="font-medium">09:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer unavailable" onclick="selectTimeSlot('10:00')">
+                            <p class="font-medium">10:00</p>
+                            <p class="text-xs text-gray-600">Booked</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('11:00')">
+                            <p class="font-medium">11:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('12:00')">
+                            <p class="font-medium">12:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('13:00')">
+                            <p class="font-medium">13:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('14:00')">
+                            <p class="font-medium">14:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer unavailable" onclick="selectTimeSlot('15:00')">
+                            <p class="font-medium">15:00</p>
+                            <p class="text-xs text-gray-600">Booked</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('16:00')">
+                            <p class="font-medium">16:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('17:00')">
+                            <p class="font-medium">17:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                        <div class="time-slot border border-gray-200 rounded-lg p-3 text-center cursor-pointer" onclick="selectTimeSlot('18:00')">
+                            <p class="font-medium">18:00</p>
+                            <p class="text-xs text-gray-600">Available</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recurring Booking -->
+                <div class="mb-8">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="recurringBooking" class="mr-3">
+                        <div>
+                            <p class="font-medium text-gray-900">Recurring Booking</p>
+                            <p class="text-sm text-gray-600">Set up weekly charging schedule</p>
+                        </div>
+                    </label>
+                    <div id="recurringOptions" class="mt-4 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>Weekly</option>
+                                    <option>Bi-weekly</option>
+                                    <option>Monthly</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Booking Summary</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Service:</span>
+                            <span id="summaryService" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Station:</span>
+                            <span id="summaryStation" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Vehicle:</span>
+                            <span id="summaryVehicle" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Energy Needed:</span>
+                            <span id="summaryEnergy" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Estimated Duration:</span>
+                            <span id="summaryDuration" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Cost:</span>
+                            <span id="summaryCost" class="font-medium text-green-600">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button onclick="previousStep()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <button onclick="nextStep()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Confirm Booking <i class="fas fa-check ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Confirmation -->
+            <div id="step4" class="booking-step hidden">
+                <div id="loadingConfirmation" class="text-center py-12">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-600">Processing your booking...</p>
+                </div>
+                <div id="confirmationContent" class="hidden">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-green-600 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-2">Booking Confirmed!</h3>
+                        <p class="text-gray-600">Your EV charging session has been successfully booked.</p>
+                    </div>
+
+                    <!-- Booking Details -->
+                    <div class="bg-white border border-gray-200 rounded-xl p-6 mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Booking Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-1">Booking Reference</p>
+                                    <p class="font-semibold text-lg" id="bookingReference">ECV-2025-001234</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-1">Service Type</p>
+                                    <p class="font-medium" id="confirmedService">-</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-1">Station</p>
+                                    <p class="font-medium" id="confirmedStation">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Vehicle</p>
+                                    <p class="font-medium" id="confirmedVehicle">-</p>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-1">Date & Time</p>
+                                    <p class="font-medium" id="confirmedDateTime">-</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-1">Energy Required</p>
+                                    <p class="font-medium" id="confirmedEnergy">-</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-600 mb-1">Duration</p>
+                                    <p class="font-medium" id="confirmedDuration">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Total Amount</p>
+                                    <p class="font-semibold text-lg text-green-600" id="confirmedCost">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Code -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-8 text-center">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Station Access Code</h4>
+                        <div class="w-32 h-32 bg-white rounded-lg mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                        </div>
+                        <p class="text-sm text-gray-600">Show this QR code at the station</p>
+                        <p class="text-xs text-gray-500 mt-2">Or use booking reference: <span class="font-mono">ECV-2025-001234</span></p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button class="bg-white hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium transition border border-gray-200">
+                            <i class="fas fa-calendar-plus mr-2"></i> Add to Calendar
+                        </button>
+                        <button class="bg-white hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium transition border border-gray-200">
+                            <i class="fas fa-share mr-2"></i> Share Booking
+                        </button>
+                        <button class="bg-white hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium transition border border-gray-200">
+                            <i class="fas fa-download mr-2"></i> Download Receipt
+                        </button>
+                        <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                            <i class="fas fa-car mr-2"></i> Get Directions
+                        </button>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="mt-8 bg-blue-50 rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">What's Next?</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-3 mt-0.5"></i>
+                                <div>
+                                    <p class="font-medium text-gray-900">Arrive at the station</p>
+                                    <p class="text-sm text-gray-600">Show your QR code or booking reference</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-3 mt-0.5"></i>
+                                <div>
+                                    <p class="font-medium text-gray-900">Connect your vehicle</p>
+                                    <p class="text-sm text-gray-600">Follow station instructions</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mr-3 mt-0.5"></i>
+                                <div>
+                                    <p class="font-medium text-gray-900">Monitor progress</p>
+                                    <p class="text-sm text-gray-600">Receive notifications when complete</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Features Section -->
+        <div class="mt-12">
+            <h3 class="text-2xl font-semibold text-gray-900 mb-6">Why Book With Us?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="feature-card bg-white border border-gray-200 rounded-xl p-6">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-bolt text-green-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-2">Fast & Reliable</h4>
+                    <p class="text-sm text-gray-600">High-speed charging with guaranteed availability and real-time monitoring.</p>
+                </div>
+                <div class="feature-card bg-white border border-gray-200 rounded-xl p-6">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-leaf text-blue-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-2">Eco-Friendly</h4>
+                    <p class="text-sm text-gray-600">Option to charge with renewable energy and reduce your carbon footprint.</p>
+                </div>
+                <div class="feature-card bg-white border border-gray-200 rounded-xl p-6">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-purple-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 mb-2">Secure & Safe</h4>
+                    <p class="text-sm text-gray-600">Secure stations with 24/7 monitoring and emergency assistance.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-charging-station text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">EC EV Booking</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Seamless EV charging and battery swap booking for the Eastern Cape.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Battery Swap</li>
+                        <li>Charging Stations</li>
+                        <li>Mobile App</li>
+                        <li>Support</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Locations</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Port Elizabeth</li>
+                        <li>East London</li>
+                        <li>Grahamstown</li>
+                        <li>Mthatha</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <p class="text-gray-400 text-sm mb-4">
+                        24/7 Support Available
+                    </p>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        Get Help
+                    </button>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 EC EV Booking. Supporting the Eastern Cape Automotive Masterplan 2035.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        let selectedService = '';
+        let selectedTimeSlot = '';
+        let bookingData = {};
+
+        // Initialize date input with today's date
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').value = today;
+            document.getElementById('bookingDate').min = today;
+            
+            // Battery level sliders
+            const currentBatterySlider = document.getElementById('currentBattery');
+            const desiredBatterySlider = document.getElementById('desiredBattery');
+            
+            currentBatterySlider.addEventListener('input', function() {
+                document.getElementById('currentBatteryDisplay').textContent = this.value + '%';
+                calculateEnergyNeeded();
+            });
+            
+            desiredBatterySlider.addEventListener('input', function() {
+                document.getElementById('desiredBatteryDisplay').textContent = this.value + '%';
+                calculateEnergyNeeded();
+            });
+            
+            // Recurring booking toggle
+            document.getElementById('recurringBooking').addEventListener('change', function() {
+                const options = document.getElementById('recurringOptions');
+                if (this.checked) {
+                    options.classList.remove('hidden');
+                } else {
+                    options.classList.add('hidden');
+                }
+            });
+            
+            // Vehicle model selection based on make
+            document.getElementById('vehicleMake').addEventListener('change', function() {
+                const modelSelect = document.getElementById('vehicleModel');
+                modelSelect.innerHTML = '<option value="">Select model</option>';
+                
+                const models = {
+                    'tesla': ['Model 3', 'Model S', 'Model X', 'Model Y'],
+                    'nissan': ['Leaf', 'Ariya'],
+                    'hyundai': ['Kona', 'Ioniq 5'],
+                    'bmw': ['i3', 'i4', 'iX'],
+                    'audi': ['e-tron', 'Q4 e-tron'],
+                    'volkswagen': ['ID.3', 'ID.4'],
+                    'other': ['Other Model']
+                };
+                
+                if (models[this.value]) {
+                    models[this.value].forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.toLowerCase().replace(/\s+/g, '');
+                        option.textContent = model;
+                        modelSelect.appendChild(option);
+                    });
+                }
+            });
+        });
+
+        function selectService(service) {
+            selectedService = service;
+            bookingData.service = service;
+            
+            // Update UI
+            document.querySelectorAll('.booking-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function setEnergyLevel(type) {
+            const currentBattery = parseInt(document.getElementById('currentBattery').value);
+            const desiredBattery = document.getElementById('desiredBattery');
+            
+            switch(type) {
+                case 'quick':
+                    desiredBattery.value = Math.min(100, currentBattery + 30);
+                    break;
+                case 'half':
+                    desiredBattery.value = Math.min(100, currentBattery + 50);
+                    break;
+                case 'full':
+                    desiredBattery.value = 100;
+                    break;
+                case 'custom':
+                    // Let user set manually
+                    return;
+            }
+            
+            document.getElementById('desiredBatteryDisplay').textContent = desiredBattery.value + '%';
+            calculateEnergyNeeded();
+            
+            // Update selection
+            document.querySelectorAll('.energy-suggestion').forEach(suggestion => {
+                suggestion.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function calculateEnergyNeeded() {
+            const currentBattery = parseInt(document.getElementById('currentBattery').value);
+            const desiredBattery = parseInt(document.getElementById('desiredBattery').value);
+            const batteryCapacity = 60; // Default 60kWh
+            
+            const energyNeeded = ((desiredBattery - currentBattery) / 100) * batteryCapacity;
+            const estimatedCost = selectedService === 'swap' ? 120 : energyNeeded * 2.5;
+            
+            document.getElementById('energyNeeded').textContent = energyNeeded.toFixed(1) + ' kWh';
+            document.getElementById('estimatedCost').textContent = 'R' + estimatedCost.toFixed(2);
+            
+            bookingData.energyNeeded = energyNeeded;
+            bookingData.estimatedCost = estimatedCost;
+        }
+
+        function selectTimeSlot(time) {
+            if (event.currentTarget.classList.contains('unavailable')) {
+                return;
+            }
+            
+            selectedTimeSlot = time;
+            bookingData.timeSlot = time;
+            
+            // Update UI
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function nextStep() {
+            if (validateCurrentStep()) {
+                // Save data
+                saveStepData();
+                
+                // Update progress
+                document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.add('completed');
+                
+                // Hide current step
+                document.getElementById(`step${currentStep}`).classList.add('hidden');
+                
+                // Show next step
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.remove('hidden');
+                document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.add('active');
+                
+                // Special handling for step 4 (confirmation)
+                if (currentStep === 4) {
+                    processBooking();
+                }
+                
+                // Update summary if on step 3
+                if (currentStep === 3) {
+                    updateBookingSummary();
+                }
+            }
+        }
+
+        function previousStep() {
+            // Hide current step
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.remove('active');
+            
+            // Show previous step
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+            document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.remove('completed');
+        }
+
+        function validateCurrentStep() {
+            const step = document.getElementById(`step${currentStep}`);
+            let isValid = true;
+            
+            if (currentStep === 1) {
+                if (!selectedService) {
+                    alert('Please select a service type');
+                    isValid = false;
+                }
+                if (!document.getElementById('stationSelect').value) {
+                    alert('Please select a station');
+                    isValid = false;
+                }
+                if (!document.getElementById('vehicleMake').value || !document.getElementById('vehicleModel').value) {
+                    alert('Please select your vehicle');
+                    isValid = false;
+                }
+            } else if (currentStep === 2) {
+                const currentBattery = parseInt(document.getElementById('currentBattery').value);
+                const desiredBattery = parseInt(document.getElementById('desiredBattery').value);
+                if (desiredBattery <= currentBattery) {
+                    alert('Desired battery level must be higher than current level');
+                    isValid = false;
+                }
+            } else if (currentStep === 3) {
+                if (!document.getElementById('bookingDate').value) {
+                    alert('Please select a date');
+                    isValid = false;
+                }
+                if (!selectedTimeSlot) {
+                    alert('Please select a time slot');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        function saveStepData() {
+            if (currentStep === 1) {
+                bookingData.station = document.getElementById('stationSelect').value;
+                bookingData.vehicleMake = document.getElementById('vehicleMake').value;
+                bookingData.vehicleModel = document.getElementById('vehicleModel').value;
+                bookingData.currentBattery = parseInt(document.getElementById('currentBattery').value);
+                bookingData.desiredBattery = parseInt(document.getElementById('desiredBattery').value);
+            } else if (currentStep === 2) {
+                bookingData.renewableEnergy = document.getElementById('renewableEnergy').checked;
+                bookingData.offPeak = document.getElementById('offPeak').checked;
+                bookingData.batteryHealth = document.getElementById('batteryHealth').checked;
+                bookingData.notifyReady = document.getElementById('notifyReady').checked;
+            } else if (currentStep === 3) {
+                bookingData.date = document.getElementById('bookingDate').value;
+                bookingData.recurring = document.getElementById('recurringBooking').checked;
+            }
+        }
+
+        function updateBookingSummary() {
+            const serviceNames = {
+                'swap': 'Battery Swap',
+                'charge': 'Charging'
+            };
+            
+            const stationNames = {
+                'pe-central': 'Port Elizabeth Central',
+                'el-mall': 'East London Mall',
+                'gra-univ': 'Grahamstown University',
+                'mth-plaza': 'Mthatha Plaza',
+                'jeff-bay': 'Jeffreys Bay Beach'
+            };
+            
+            const vehicleName = bookingData.vehicleMake + ' ' + 
+                document.querySelector(`#vehicleModel option[value="${bookingData.vehicleModel}"]`).textContent;
+            
+            const duration = selectedService === 'swap' ? '5 minutes' : 
+                Math.ceil(bookingData.energyNeeded / 50) + ' hours';
+            
+            document.getElementById('summaryService').textContent = serviceNames[selectedService];
+            document.getElementById('summaryStation').textContent = stationNames[bookingData.station];
+            document.getElementById('summaryVehicle').textContent = vehicleName;
+            document.getElementById('summaryEnergy').textContent = bookingData.energyNeeded.toFixed(1) + ' kWh';
+            document.getElementById('summaryDuration').textContent = duration;
+            document.getElementById('summaryCost').textContent = 'R' + bookingData.estimatedCost.toFixed(2);
+        }
+
+        function processBooking() {
+            // Show loading
+            document.getElementById('loadingConfirmation').classList.remove('hidden');
+            document.getElementById('confirmationContent').classList.add('hidden');
+            
+            // Simulate processing
+            setTimeout(() => {
+                // Generate booking reference
+                const bookingRef = 'ECV-' + new Date().getFullYear() + '-' + 
+                    Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                
+                // Update confirmation details
+                const serviceNames = {
+                    'swap': 'Battery Swap',
+                    'charge': 'Charging'
+                };
+                
+                const stationNames = {
+                    'pe-central': 'Port Elizabeth Central',
+                    'el-mall': 'East London Mall',
+                    'gra-univ': 'Grahamstown University',
+                    'mth-plaza': 'Mthatha Plaza',
+                    'jeff-bay': 'Jeffreys Bay Beach'
+                };
+                
+                const vehicleName = bookingData.vehicleMake + ' ' + 
+                    document.querySelector(`#vehicleModel option[value="${bookingData.vehicleModel}"]`).textContent;
+                
+                const dateTime = new Date(bookingData.date + ' ' + selectedTimeSlot);
+                const formattedDateTime = dateTime.toLocaleDateString() + ' at ' + selectedTimeSlot;
+                
+                const duration = selectedService === 'swap' ? '5 minutes' : 
+                    Math.ceil(bookingData.energyNeeded / 50) + ' hours';
+                
+                // Update confirmation page
+                document.getElementById('bookingReference').textContent = bookingRef;
+                document.getElementById('confirmedService').textContent = serviceNames[selectedService];
+                document.getElementById('confirmedStation').textContent = stationNames[bookingData.station];
+                document.getElementById('confirmedVehicle').textContent = vehicleName;
+                document.getElementById('confirmedDateTime').textContent = formattedDateTime;
+                document.getElementById('confirmedEnergy').textContent = bookingData.energyNeeded.toFixed(1) + ' kWh';
+                document.getElementById('confirmedDuration').textContent = duration;
+                document.getElementById('confirmedCost').textContent = 'R' + bookingData.estimatedCost.toFixed(2);
+                
+                // Show confirmation
+                document.getElementById('loadingConfirmation').classList.add('hidden');
+                document.getElementById('confirmationContent').classList.remove('hidden');
+                
+                // Update progress
+                document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.add('completed');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

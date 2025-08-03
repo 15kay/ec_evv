@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Route Optimizer - Eastern Cape</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .route-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .route-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .route-card.selected {
+            border-left-color: #10B981;
+            background-color: #F0FDF4;
+        }
+        .charging-station {
+            transition: all 0.2s ease;
+        }
+        .charging-station:hover {
+            transform: scale(1.05);
+        }
+        .preference-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: #E5E7EB;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .preference-slider:hover {
+            opacity: 1;
+        }
+        .preference-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #10B981;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .preference-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #10B981;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        #map {
+            height: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .battery-indicator {
+            background: linear-gradient(to right, #EF4444, #F59E0B, #10B981);
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+        .battery-marker {
+            position: absolute;
+            top: -4px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 2px solid #10B981;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-charging-station text-white text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-gray-900">EC EV Route Optimizer</h1>
+                        <p class="text-xs text-green-600">Eastern Cape Electric Mobility</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Charging Stations</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Savings Calculator</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Community</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Smart EV Route Planning</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Experience the future of electric vehicle travel with our AI-powered route optimizer that predicts your needs and optimizes your journey.
+            </p>
+        </div>
+
+        <!-- Route Planner Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Starting Point</label>
+                    <div class="relative">
+                        <input type="text" id="startPoint" placeholder="Enter location" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <i class="fas fa-map-marker-alt absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Destination</label>
+                    <div class="relative">
+                        <input type="text" id="endPoint" placeholder="Enter destination" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <i class="fas fa-flag-checkered absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Battery Level</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="range" id="batteryLevel" min="0" max="100" value="80" 
+                               class="flex-1 preference-slider">
+                        <span id="batteryDisplay" class="text-lg font-semibold text-green-600 w-12">80%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button id="optimizeRoute" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition flex items-center">
+                    <i class="fas fa-route mr-2"></i> Optimize Route
+                </button>
+                <button id="advancedOptions" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition flex items-center">
+                    <i class="fas fa-sliders-h mr-2"></i> Advanced Options
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Options Panel (Hidden by default) -->
+        <div id="advancedPanel" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Route Preferences</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Minimize Charging Stops</label>
+                    <input type="range" id="minimizeStops" min="0" max="100" value="70" class="w-full preference-slider">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Less Important</span>
+                        <span>Very Important</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Minimize Travel Time</label>
+                    <input type="range" id="minimizeTime" min="0" max="100" value="50" class="w-full preference-slider">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Less Important</span>
+                        <span>Very Important</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Use Renewable Energy</label>
+                    <input type="range" id="renewableEnergy" min="0" max="100" value="80" class="w-full preference-slider">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Less Important</span>
+                        <span>Very Important</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Avoid High-Traffic Areas</label>
+                    <input type="range" id="avoidTraffic" min="0" max="100" value="60" class="w-full preference-slider">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Less Important</span>
+                        <span>Very Important</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Map Container -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-4">
+                    <div id="map" class="w-full"></div>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-green-600 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Optimal Route</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Alternative Routes</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-yellow-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Charging Stations</span>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-leaf text-green-600 mr-1"></i> Eco-friendly routing active
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Route Options Panel -->
+            <div class="space-y-4">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Route Options</h3>
+                    <div id="routeOptions" class="space-y-4">
+                        <!-- Route options will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- Charging Plan -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Charging Plan</h3>
+                    <div id="chargingPlan" class="space-y-4">
+                        <!-- Charging plan will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- Journey Insights -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Journey Insights</h3>
+                    <div id="journeyInsights" class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Estimated Arrival</span>
+                            <span class="font-semibold">2:45 PM</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Energy Consumption</span>
+                            <span class="font-semibold">42 kWh</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Cost Savings</span>
+                            <span class="font-semibold text-green-600">R85 vs petrol</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">CO₂ Saved</span>
+                            <span class="font-semibold text-green-600">32 kg</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Insights Section -->
+        <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Community Insights</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-4 border border-gray-200 rounded-lg">
+                    <i class="fas fa-users text-3xl text-green-600 mb-3"></i>
+                    <h4 class="font-semibold text-gray-900 mb-2">1,248 Active Users</h4>
+                    <p class="text-sm text-gray-600">Sharing real-time charging station updates</p>
+                </div>
+                <div class="text-center p-4 border border-gray-200 rounded-lg">
+                    <i class="fas fa-star text-3xl text-yellow-500 mb-3"></i>
+                    <h4 class="font-semibold text-gray-900 mb-2">4.8/5 Average Rating</h4>
+                    <p class="text-sm text-gray-600">Based on 5,234 route optimizations</p>
+                </div>
+                <div class="text-center p-4 border border-gray-200 rounded-lg">
+                    <i class="fas fa-bolt text-3xl text-blue-500 mb-3"></i>
+                    <h4 class="font-semibold text-gray-900 mb-2">89% Accuracy</h4>
+                    <p class="text-sm text-gray-600">Battery consumption predictions</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-charging-station text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">EC EV Optimizer</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Revolutionizing electric vehicle travel in the Eastern Cape.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Features</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Smart Route Planning</li>
+                        <li>Charging Station Finder</li>
+                        <li>Battery Optimization</li>
+                        <li>Community Insights</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>User Guide</li>
+                        <li>API Documentation</li>
+                        <li>Mobile Apps</li>
+                        <li>Blog</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 EC EV Route Optimizer. Supporting the Eastern Cape Automotive Masterplan 2035.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize Leaflet Map
+        let map;
+        let routeLayer;
+        let markers = [];
+
+        function initMap() {
+            map = L.map('map').setView([-33.0245, 27.8995], 10); // Centered on Eastern Cape
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        }
+
+        // EV Route Optimizer Core Class
+        class EVRouteOptimizer {
+            constructor() {
+                this.vehicleProfile = {
+                    batteryCapacity: 60, // kWh
+                    efficiency: 0.18, // kWh/km
+                    maxRange: 333, // km
+                    fastChargeRate: 50, // kW
+                    slowChargeRate: 7.4 // kW
+                };
+                this.chargingStations = this.loadChargingStations();
+                this.userPreferences = {
+                    minimizeStops: 70,
+                    minimizeTime: 50,
+                    renewableEnergy: 80,
+                    avoidTraffic: 60
+                };
+            }
+
+            loadChargingStations() {
+                // Simulated charging station data for Eastern Cape
+                return [
+                    {
+                        id: 1,
+                        name: "Port Elizabeth Central",
+                        lat: -33.9608,
+                        lng: 25.6022,
+                        power: 50,
+                        type: "DC Fast",
+                        availability: 0.8,
+                        renewable: true,
+                        price: 1.80,
+                        amenities: ["Restrooms", "Cafe", "WiFi"]
+                    },
+                    {
+                        id: 2,
+                        name: "East London Mall",
+                        lat: -33.0153,
+                        lng: 27.9116,
+                        power: 150,
+                        type: "Ultra Fast",
+                        availability: 0.9,
+                        renewable: false,
+                        price: 2.20,
+                        amenities: ["Shopping", "Restaurants", "Restrooms"]
+                    },
+                    {
+                        id: 3,
+                        name: "Grahamstown University",
+                        lat: -33.3044,
+                        lng: 26.5328,
+                        power: 22,
+                        type: "AC Fast",
+                        availability: 0.7,
+                        renewable: true,
+                        price: 1.50,
+                        amenities: ["Campus", "Library", "Cafe"]
+                    },
+                    {
+                        id: 4,
+                        name: "Mthatha Plaza",
+                        lat: -31.1377,
+                        lng: 28.7882,
+                        power: 50,
+                        type: "DC Fast",
+                        availability: 0.6,
+                        renewable: false,
+                        price: 2.00,
+                        amenities: ["Shopping", "Restrooms"]
+                    },
+                    {
+                        id: 5,
+                        name: "Jeffreys Bay Beach",
+                        lat: -34.0499,
+                        lng: 24.9180,
+                        power: 22,
+                        type: "AC Fast",
+                        availability: 0.85,
+                        renewable: true,
+                        price: 1.60,
+                        amenities: ["Beach", "Restrooms", "Restaurants"]
+                    }
+                ];
+            }
+
+            async calculateRoute(start, end, batteryLevel) {
+                // Show loading state
+                this.showLoading();
+                
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Calculate routes with different priorities
+                const routes = await this.generateRouteOptions(start, end, batteryLevel);
+                
+                // Hide loading state
+                this.hideLoading();
+                
+                return routes;
+            }
+
+            async generateRouteOptions(start, end, batteryLevel) {
+                // Simulated route generation with different optimization strategies
+                const routes = [];
+                
+                // Route 1: Fastest Route
+                routes.push({
+                    id: 1,
+                    name: "Fastest Route",
+                    description: "Minimize travel time with strategic charging stops",
+                    distance: 285,
+                    time: "3h 45m",
+                    chargingStops: 2,
+                    energyUsed: 51.3,
+                    cost: 92.34,
+                    co2Saved: 38.5,
+                    score: 92,
+                    waypoints: [
+                        { lat: -33.9608, lng: 25.6022, chargeTime: 25 },
+                        { lat: -33.0153, lng: 27.9116, chargeTime: 30 }
+                    ]
+                });
+                
+                // Route 2: Most Efficient
+                routes.push({
+                    id: 2,
+                    name: "Most Efficient",
+                    description: "Optimize energy consumption with gentle driving",
+                    distance: 295,
+                    time: "4h 15m",
+                    chargingStops: 1,
+                    energyUsed: 48.2,
+                    cost: 86.76,
+                    co2Saved: 36.2,
+                    score: 88,
+                    waypoints: [
+                        { lat: -33.3044, lng: 26.5328, chargeTime: 45 }
+                    ]
+                });
+                
+                // Route 3: Scenic Route
+                routes.push({
+                    id: 3,
+                    name: "Scenic Coastal",
+                    description: "Beautiful coastal drive with renewable charging",
+                    distance: 310,
+                    time: "4h 30m",
+                    chargingStops: 2,
+                    energyUsed: 49.6,
+                    cost: 79.36,
+                    co2Saved: 37.2,
+                    score: 85,
+                    waypoints: [
+                        { lat: -34.0499, lng: 24.9180, chargeTime: 35 },
+                        { lat: -33.0153, lng: 27.9116, chargeTime: 25 }
+                    ]
+                });
+                
+                return routes;
+            }
+
+            showLoading() {
+                document.getElementById('routeOptions').innerHTML = `
+                    <div class="flex justify-center items-center py-8">
+                        <div class="loading-spinner"></div>
+                    </div>
+                `;
+            }
+
+            hideLoading() {
+                // Loading will be replaced with route options
+            }
+        }
+
+        // Initialize the optimizer
+        const optimizer = new EVRouteOptimizer();
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            
+            // Battery level slider
+            const batterySlider = document.getElementById('batteryLevel');
+            const batteryDisplay = document.getElementById('batteryDisplay');
+            batterySlider.addEventListener('input', function() {
+                batteryDisplay.textContent = this.value + '%';
+            });
+            
+            // Advanced options toggle
+            document.getElementById('advancedOptions').addEventListener('click', function() {
+                const panel = document.getElementById('advancedPanel');
+                panel.classList.toggle('hidden');
+            });
+            
+            // Optimize route button
+            document.getElementById('optimizeRoute').addEventListener('click', async function() {
+                const start = document.getElementById('startPoint').value;
+                const end = document.getElementById('endPoint').value;
+                const battery = document.getElementById('batteryLevel').value;
+                
+                if (!start || !end) {
+                    alert('Please enter both starting point and destination');
+                    return;
+                }
+                
+                // Get user preferences
+                optimizer.userPreferences = {
+                    minimizeStops: document.getElementById('minimizeStops').value,
+                    minimizeTime: document.getElementById('minimizeTime').value,
+                    renewableEnergy: document.getElementById('renewableEnergy').value,
+                    avoidTraffic: document.getElementById('avoidTraffic').value
+                };
+                
+                // Calculate routes
+                const routes = await optimizer.calculateRoute(start, end, battery);
+                
+                // Display results
+                displayRouteOptions(routes);
+                displayChargingPlan(routes[0]); // Show plan for best route
+                updateMap(routes);
+            });
+        });
+
+        function displayRouteOptions(routes) {
+            const container = document.getElementById('routeOptions');
+            container.innerHTML = '';
+            
+            routes.forEach((route, index) => {
+                const routeCard = document.createElement('div');
+                routeCard.className = `route-card p-4 border border-gray-200 rounded-lg cursor-pointer ${index === 0 ? 'selected' : ''}`;
+                routeCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-gray-900">${route.name}</h4>
+                        <span class="text-sm font-semibold text-green-600">${route.score}% Match</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">${route.description}</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-road text-gray-400 mr-2"></i>
+                            <span>${route.distance} km</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-clock text-gray-400 mr-2"></i>
+                            <span>${route.time}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-charging-station text-gray-400 mr-2"></i>
+                            <span>${route.chargingStops} stops</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-bolt text-gray-400 mr-2"></i>
+                            <span>${route.energyUsed} kWh</span>
+                        </div>
+                    </div>
+                `;
+                
+                routeCard.addEventListener('click', function() {
+                    document.querySelectorAll('.route-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    displayChargingPlan(route);
+                    updateMap([route]);
+                });
+                
+                container.appendChild(routeCard);
+            });
+        }
+
+        function displayChargingPlan(route) {
+            const container = document.getElementById('chargingPlan');
+            container.innerHTML = '';
+            
+            route.waypoints.forEach((waypoint, index) => {
+                const station = optimizer.chargingStations.find(s => 
+                    Math.abs(s.lat - waypoint.lat) < 0.01 && Math.abs(s.lng - waypoint.lng) < 0.01
+                ) || {
+                    name: "Charging Station " + (index + 1),
+                    power: 50,
+                    type: "DC Fast",
+                    renewable: Math.random() > 0.5,
+                    amenities: ["Restrooms"]
+                };
+                
+                const chargingCard = document.createElement('div');
+                chargingCard.className = 'charging-station p-4 border border-gray-200 rounded-lg';
+                chargingCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-gray-900">${station.name}</h4>
+                        <span class="text-sm font-semibold text-blue-600">${waypoint.chargeTime} min</span>
+                    </div>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                        <span><i class="fas fa-bolt mr-1"></i>${station.power} kW</span>
+                        <span><i class="fas fa-plug mr-1"></i>${station.type}</span>
+                        ${station.renewable ? '<span class="text-green-600"><i class="fas fa-leaf mr-1"></i>Renewable</span>' : ''}
+                    </div>
+                    <div class="mt-2 flex flex-wrap gap-1">
+                        ${station.amenities.map(amenity => 
+                            `<span class="text-xs bg-gray-100 px-2 py-1 rounded">${amenity}</span>`
+                        ).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(chargingCard);
+            });
+        }
+
+        function updateMap(routes) {
+            // Clear existing routes and markers
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+            }
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            // Add charging station markers
+            optimizer.chargingStations.forEach(station => {
+                const marker = L.marker([station.lat, station.lng], {
+                    icon: L.divIcon({
+                        html: `<div class="charging-station-marker pulse-dot">
+                                <i class="fas fa-charging-station text-yellow-500"></i>
+                               </div>`,
+                        iconSize: [30, 30],
+                        className: 'custom-div-icon'
+                    })
+                }).addTo(map);
+                
+                marker.bindPopup(`
+                    <div class="p-2">
+                        <h4 class="font-semibold">${station.name}</h4>
+                        <p class="text-sm">${station.power} kW ${station.type}</p>
+                        <p class="text-sm">Availability: ${Math.round(station.availability * 100)}%</p>
+                        ${station.renewable ? '<p class="text-sm text-green-600"><i class="fas fa-leaf"></i> Renewable Energy</p>' : ''}
+                    </div>
+                `);
+                
+                markers.push(marker);
+            });
+            
+            // Draw routes
+            routes.forEach((route, index) => {
+                const color = index === 0 ? '#10B981' : '#3B82F6';
+                const routeCoordinates = generateRouteCoordinates(route);
+                
+                routeLayer = L.polyline(routeCoordinates, {
+                    color: color,
+                    weight: index === 0 ? 5 : 3,
+                    opacity: index === 0 ? 0.8 : 0.5
+                }).addTo(map);
+            });
+            
+            // Fit map to show all routes
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+        function generateRouteCoordinates(route) {
+            // Simulated route coordinates
+            const baseCoordinates = [
+                [-33.9608, 25.6022], // Port Elizabeth
+                [-33.5, 26.2],
+                [-33.0, 26.8],
+                [-32.5, 27.4],
+                [-32.0, 27.9],
+                [-31.5, 28.3],
+                [-31.1377, 28.7882] // Mthatha
+            ];
+            
+            // Add some variation for different routes
+            const variation = route.id * 0.01;
+            return baseCoordinates.map(coord => [
+                coord[0] + (Math.random() - 0.5) * variation,
+                coord[1] + (Math.random() - 0.5) * variation
+            ]);
+        }
+    </script>
+</body>
+</html>

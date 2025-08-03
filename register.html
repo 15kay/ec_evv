@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" class="geist_e531dabc-module__QGiZLq__variable geist_mono_68a01160-module__YLcDdW__variable">
+<head>
+    <meta charSet="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="main.css">
+    <title>Sign Up - EC EV Toolkit</title>
+    <meta name="description" content="Create your EC EV Toolkit account to join the EV community and access charging stations, savings calculator, and more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<style>
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-container {
+        max-width: 480px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        padding: 2.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-card:hover {
+        box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.06);
+    }
+    
+    .input-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .input-wrapper {
+        position: relative;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        z-index: 10;
+    }
+    
+    .input-group input {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f9fafb;
+    }
+    
+    .input-group input:focus {
+        outline: none;
+        border-color: #10b981;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    
+    .input-group input::placeholder {
+        color: #9ca3af;
+    }
+    
+    .password-strength {
+        margin-top: 0.75rem;
+    }
+    
+    .strength-bar {
+        height: 6px;
+        background-color: #e5e7eb;
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .strength-fill {
+        height: 100%;
+        transition: width 0.3s ease, background-color 0.3s ease;
+        border-radius: 3px;
+    }
+    
+    .strength-text {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: start;
+        margin-bottom: 1.25rem;
+    }
+    
+    .checkbox-group input {
+        width: 1.125rem;
+        height: 1.125rem;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
+        margin-right: 0.75rem;
+        margin-top: 0.125rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+    
+    .checkbox-group input:checked {
+        background: #10b981;
+        border-color: #10b981;
+    }
+    
+    .checkbox-group label {
+        font-size: 0.875rem;
+        color: #4b5563;
+        line-height: 1.5;
+        cursor: pointer;
+    }
+    
+    .checkbox-group a {
+        color: #10b981;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    
+    .checkbox-group a:hover {
+        color: #059669;
+        text-decoration: underline;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+        position: relative;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.35);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 2rem 0;
+    }
+    
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+    }
+    
+    .divider span {
+        padding: 0 1rem;
+        color: #6b7280;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .social-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-social {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-social:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .login-link p {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+    
+    .login-link a {
+        color: #10b981;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+    
+    .login-link a:hover {
+        color: #059669;
+        text-decoration: underline;
+    }
+    
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+    }
+    
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+    
+    .form-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .name-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    @media (max-width: 640px) {
+        .form-card {
+            padding: 2rem 1.5rem;
+            margin: 0 1rem;
+        }
+        
+        .form-title {
+            font-size: 1.75rem;
+        }
+        
+        .name-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+<body class="antialiased">
+    <div class="antialiased">
+        <div class="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+            <nav class="bg-white/90 backdrop-blur-md border-b border-green-100 sticky top-0 z-50 shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <span class="text-white font-bold text-xl">EC</span>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-bold text-gray-900">EC EV Connect</h1>
+                                <p class="text-xs text-green-600">Eastern Cape Electric Vehicle Solutions</p>
+                            </div>
+                        </div>
+                        <div class="hidden md:flex items-center space-x-6">
+                            <a href="index.html" class="text-gray-700 hover:text-green-600 font-medium transition-colors">Home</a>
+                            <a href="solutions.html" class="text-gray-700 hover:text-green-600 font-medium transition-colors">Core Values</a>
+                            <a href="market.html" class="text-gray-700 hover:text-green-600 font-medium transition-colors">Marketplace</a>
+                            <a href="portal.html" class="text-gray-700 hover:text-green-600 font-medium transition-colors">Youth Portal</a>
+                            <a href="learn more/index.html" class="text-gray-700 hover:text-green-600 font-medium transition-colors">Learn More</a>
+                            
+                            <a href="login.html" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors text-white shadow h-9 px-4 py-2 bg-green-600 hover:bg-green-700">Login</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="form-container">
+                    <div class="text-center mb-8">
+                        <div class="badge">Join Our Community</div>
+                        <h1 class="form-title">Create Your Account</h1>
+                        <p class="form-subtitle">Start your journey with the Eastern Cape EV community</p>
+                    </div>
+
+                    <div class="form-card">
+                        <form>
+                            <div class="name-row">
+                                <div class="input-group">
+                                    <label for="firstName">First Name</label>
+                                    <div class="input-wrapper">
+                                        <!-- <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg> -->
+                                        <input type="text" id="firstName" name="firstName" placeholder="John" required>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="lastName">Last Name</label>
+                                    <div class="input-wrapper">
+                                        <!-- <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg> -->
+                                        <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="email">Email Address</label>
+                                <div class="input-wrapper">
+                                    <!-- <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg> -->
+                                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="password">Password</label>
+                                <div class="input-wrapper">
+                                    <!-- <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg> -->
+                                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                                </div>
+                                <div class="password-strength">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill" style="width: 0%; background-color: #ef4444;"></div>
+                                    </div>
+                                    <div class="strength-text text-red-500">Weak password</div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="confirmPassword">Confirm Password</label>
+                                <div class="input-wrapper">
+                                    <!-- <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg> -->
+                                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
+                                </div>
+                            </div>
+
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="terms" name="terms" required>
+                                <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                            </div>
+
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="newsletter" name="newsletter">
+                                <label for="newsletter">I'd like to receive updates about EV infrastructure and community initiatives</label>
+                            </div>
+
+                            <button type="submit" class="btn-primary">
+                                Create Account
+                            </button>
+                        </form>
+
+                        <div class="divider">
+                            <span>or sign up with</span>
+                        </div>
+                        <div class="login-link">
+                            <p>Already have an account? <a href="login.html">Sign in</a></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="bg-gray-900 text-white py-12 mt-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid md:grid-cols-4 gap-8">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                                    <span class="text-white font-bold text-xl">EC</span>
+                                </div>
+                                <span class="text-xl font-bold">EC EV Toolkit</span>
+                            </div>
+                            <p class="text-gray-400 text-sm">
+                                Supporting the Eastern Cape Automotive Masterplan 2035 through innovative EV solutions.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-4">Features</h3>
+                            <ul class="text-gray-400 text-sm space-y-2">
+                                <li>Charging Station Locator</li>
+                                <li>Savings Calculator</li>
+                                <li>Educational Resources</li>
+                                <li>EV Spotter</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-4">Support</h3>
+                            <ul class="text-gray-400 text-sm space-y-2">
+                                <li>Help Center</li>
+                                <li>Contact Us</li>
+                                <li>Documentation</li>
+                                <li>Community</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-4">Connect</h3>
+                            <ul class="text-gray-400 text-sm space-y-2">
+                                <li>Government Portal</li>
+                                <li>Industry Partners</li>
+                                <li>Research Initiatives</li>
+                                <li>News & Updates</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="shrink-0 h-[1px] w-full my-8 bg-gray-700"></div>
+                    <div class="text-center text-gray-400 text-sm">
+                        <p>© 2025 EC EV Toolkit. Built for the Eastern Cape Automotive Masterplan 2035.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const strengthFill = document.querySelector('.strength-fill');
+        const strengthText = document.querySelector('.strength-text');
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+            const strengthPercent = (strength / 4) * 100;
+            strengthFill.style.width = strengthPercent + '%';
+            
+            if (strength <= 1) {
+                strengthFill.style.backgroundColor = '#ef4444';
+                strengthText.textContent = 'Weak password';
+                strengthText.className = 'strength-text text-red-500';
+            } else if (strength === 2) {
+                strengthFill.style.backgroundColor = '#f59e0b';
+                strengthText.textContent = 'Fair password';
+                strengthText.className = 'strength-text text-yellow-500';
+            } else if (strength === 3) {
+                strengthFill.style.backgroundColor = '#3b82f6';
+                strengthText.textContent = 'Good password';
+                strengthText.className = 'strength-text text-blue-500';
+            } else {
+                strengthFill.style.backgroundColor = '#10b981';
+                strengthText.textContent = 'Strong password';
+                strengthText.className = 'strength-text text-green-500';
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        const confirmPassword = document.getElementById('confirmPassword');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (passwordInput.value !== confirmPassword.value) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // Here you would normally submit the form
+            alert('Account created successfully!');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en" class="geist_e531dabc-module__QGiZLq__variable geist_mono_68a01160-module__YLcDdW__variable">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EC EV Youth Portal - Login & Registration</title>
+    <meta name="description"
+        content="Login or register to access training programs and entrepreneurship resources in the Eastern Cape.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        :root {
+            --primary: #16a34a;
+            --primary-light: #22c55e;
+            --primary-dark: #15803d;
+            --secondary: #047857;
+            --background: #f0fdf4;
+            --card-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border: #bbf7d0;
+            --accent: #f97316;
+            --accent-light: #fb923c;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(to bottom right, var(--background), #dcfce7);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-light);
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-container {
+            background-color: white;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .auth-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .auth-content {
+            padding: 2rem;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+        }
+
+        .form-error {
+            color: var(--error);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-checkbox input {
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--primary);
+        }
+
+        .form-checkbox label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .form-forgot {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-forgot a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .form-forgot a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .auth-submit:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            gap: 1rem;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border);
+        }
+
+        .auth-divider span {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            background-color: white;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .social-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* User Menu */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-btn:hover {
+            background-color: rgba(22, 163, 74, 0.2);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            display: none;
+            z-index: 50;
+        }
+
+        .user-dropdown.active {
+            display: block;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .user-dropdown-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        .user-dropdown-item i {
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 2xl;
+            margin: 0 auto 2rem;
+        }
+
+        /* Success Story */
+        .success-story {
+            background-color: white;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .quote {
+            font-size: 1.25rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .quote::before {
+            content: '"';
+            font-size: 3rem;
+            color: var(--primary);
+            position: absolute;
+            left: -1.5rem;
+            top: -1rem;
+        }
+
+        .quote-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .author-info h4 {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-info p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Training Paths */
+        .training-paths {
+            margin: 3rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 2xl;
+            margin: 0 auto;
+        }
+
+        .paths-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .path-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .path-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .path-header {
+            padding: 1.5rem;
+            background-color: rgba(22, 163, 74, 0.1);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .path-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .path-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .path-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .path-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .path-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .path-modules {
+            margin-bottom: 1.5rem;
+        }
+
+        .module-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .module-icon {
+            color: var(--primary);
+        }
+
+        .path-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .path-duration {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Certificate System */
+        .certificate-system {
+            background-color: white;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .certificate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .certificate-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .certificate-levels {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .certificate-level {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .certificate-level:hover {
+            border-color: var(--primary);
+            background-color: rgba(22, 163, 74, 0.05);
+        }
+
+        .level-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .level-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .level-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Partnerships */
+        .partnerships {
+            margin: 3rem 0;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .partner-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .partner-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .partner-logo {
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .partner-logo i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .partner-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .partner-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Entrepreneur Resources */
+        .entrepreneur-resources {
+            background-color: white;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .resource-card {
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .resource-card:hover {
+            border-color: var(--accent);
+            background-color: rgba(249, 115, 22, 0.05);
+        }
+
+        .resource-icon {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 1rem;
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            max-width: 2xl;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-transparent {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-transparent:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Success Stories */
+        .success-stories {
+            margin: 3rem 0;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .story-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .story-image {
+            height: 200px;
+            background-color: #f3f4f6;
+            overflow: hidden;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-content {
+            padding: 1.5rem;
+        }
+
+        .story-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .story-excerpt {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .story-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            background-color: white;
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .certificate-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .auth-container {
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">EC</div>
+                <div class="logo-text">
+                    <h1>EC EV Youth Portal</h1>
+                    <p>Training & Entrepreneurship</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="solutions.html" class="nav-link">Core Values</a>
+                <a href="marketplace.html" class="nav-link">Marketplace</a>
+                <a href="portal.html" class="nav-link active">Youth Portal</a>
+
+                <!-- <a href="charging.html" class="nav-link">Charging Stations</a>
+                <a href="calculator.html" class="nav-link">Calculator</a> -->
+                <a href="learn more/index.html" class="nav-link">Learn More</a>
+                <button
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 text-primary-foreground shadow h-9 px-4 py-2 bg-green-600 hover:bg-green-700"
+                    data-react-source="[project]/src/components/ui/button.tsx:47:7">Log/ Register</button>
+                <div class="user-menu">
+                    <button class="user-btn" id="userMenuBtn">
+                        <i class="fas fa-user"></i>
+                        <span>Thando Nkosi</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="#" class="user-dropdown-item">
+                            <i class="fas fa-user-circle"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="#" class="user-dropdown-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>My Courses</span>
+                        </a>
+                        <a href="#" class="user-dropdown-item">
+                            <i class="fas fa-certificate"></i>
+                            <span>Certificates</span>
+                        </a>
+                        <a href="#" class="user-dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <a href="#" class="user-dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Build Your Future in the Green Economy</h1>
+            <p>Gain valuable skills in EV repair, solar installation, and data management. Get certified and start your
+                own sustainable business in the Eastern Cape.</p>
+
+            <!-- Success Story -->
+            <div class="success-story">
+                <div class="quote">
+                    I started as a user of EC-EV Assist. Now I run a green EV workshop in Lusikisiki, employing 5 people
+                    from my community.
+                </div>
+                <div class="quote-author">
+                    <div class="author-avatar">TN</div>
+                    <div class="author-info">
+                        <h4>Thando Nkosi</h4>
+                        <p>Founder, Green Wheels Workshop</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Training Paths -->
+        <section class="training-paths">
+            <div class="section-header">
+                <h2>Training Pathways</h2>
+                <p>Choose your path to a sustainable career in the green economy</p>
+            </div>
+
+            <div class="paths-grid">
+                <!-- EV Repair Path -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <i class="fas fa-car-battery"></i>
+                        </div>
+                        <h3 class="path-title">EV Repair & Maintenance</h3>
+                        <p class="path-subtitle">Become a certified EV technician</p>
+                    </div>
+                    <div class="path-content">
+                        <p class="path-description">Learn to diagnose, repair, and maintain electric vehicles. Master
+                            battery systems, electric motors, and EV-specific electronics.</p>
+
+                        <div class="path-modules">
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>EV Fundamentals & Safety</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Battery Systems & Management</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Electric Motor Diagnostics</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Charging Systems</span>
+                            </div>
+                        </div>
+
+                        <div class="path-footer">
+                            <div class="path-duration">8 weeks</div>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Solar Installation Path -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <i class="fas fa-solar-panel"></i>
+                        </div>
+                        <h3 class="path-title">Solar Charger Installation</h3>
+                        <p class="path-subtitle">Install and maintain solar systems</p>
+                    </div>
+                    <div class="path-content">
+                        <p class="path-description">Master the installation of solar panels, inverters, and battery
+                            systems. Learn to design efficient solar solutions for homes and businesses.</p>
+
+                        <div class="path-modules">
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Solar Energy Fundamentals</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>System Design & Sizing</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Installation Techniques</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Maintenance & Troubleshooting</span>
+                            </div>
+                        </div>
+
+                        <div class="path-footer">
+                            <div class="path-duration">6 weeks</div>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Management Path -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="path-title">Green Tech Data Management</h3>
+                        <p class="path-subtitle">Analyze and optimize green technology</p>
+                    </div>
+                    <div class="path-content">
+                        <p class="path-description">Learn to collect, analyze, and visualize data from EV charging
+                            stations, solar installations, and energy consumption patterns.</p>
+
+                        <div class="path-modules">
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Data Collection Methods</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Analytics & Visualization</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Performance Optimization</span>
+                            </div>
+                            <div class="module-item">
+                                <i class="fas fa-check-circle module-icon"></i>
+                                <span>Reporting & Insights</span>
+                            </div>
+                        </div>
+
+                        <div class="path-footer">
+                            <div class="path-duration">10 weeks</div>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certificate System -->
+        <section class="certificate-system">
+            <div class="certificate-header">
+                <h2>Micro-Learning & Certificate System</h2>
+                <button class="btn btn-outline">View All Certificates</button>
+            </div>
+
+            <div class="certificate-levels">
+                <div class="certificate-level">
+                    <div class="level-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="level-name">Foundation Level</h3>
+                    <p class="level-description">Basic knowledge and safety procedures</p>
+                </div>
+
+                <div class="certificate-level">
+                    <div class="level-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="level-name">Intermediate Level</h3>
+                    <p class="level-description">Hands-on technical skills</p>
+                </div>
+
+                <div class="certificate-level">
+                    <div class="level-icon">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <h3 class="level-name">Advanced Level</h3>
+                    <p class="level-description">Specialized expertise</p>
+                </div>
+
+                <div class="certificate-level">
+                    <div class="level-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3 class="level-name">Expert Level</h3>
+                    <p class="level-description">Industry certification</p>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <p>Complete short modules at your own pace. Earn certificates as you progress through each level. Each
+                    certificate is recognized by industry partners and educational institutions.</p>
+            </div>
+        </section>
+
+        <!-- Partnerships -->
+        <section class="partnerships">
+            <div class="section-header">
+                <h2>Strategic Partnerships</h2>
+                <p>Connect with opportunities through our partner organizations</p>
+            </div>
+
+            <div class="partners-grid">
+                <!-- NYDA -->
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="partner-name">National Youth Development Agency (NYDA)</h3>
+                    <p class="partner-description">Access grants, mentorship, and business development support for young
+                        entrepreneurs.</p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+
+                <!-- YES Program -->
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3 class="partner-name">Youth Employment Service (YES)</h3>
+                    <p class="partner-description">Gain work experience and placement opportunities with leading green
+                        technology companies.</p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+
+                <!-- SETA -->
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="partner-name">SETA Accreditation</h3>
+                    <p class="partner-description">Nationally recognized qualifications and skills development programs.
+                    </p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+
+                <!-- FET Colleges -->
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h3 class="partner-name">Local FET Colleges</h3>
+                    <p class="partner-description">Practical training facilities and accredited programs across the
+                        Eastern Cape.</p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Entrepreneur Resources -->
+        <section class="entrepreneur-resources">
+            <div class="section-header">
+                <h2>Entrepreneur Resources</h2>
+                <p>Everything you need to start and grow your green business</p>
+            </div>
+
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="resource-title">Business Planning</h3>
+                    <p class="resource-description">Templates and guides for creating your business plan, financial
+                        projections, and market analysis.</p>
+                    <button class="btn btn-accent">Access Resources</button>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <h3 class="resource-title">Funding Opportunities</h3>
+                    <p class="resource-description">Information on grants, loans, and investment opportunities for green
+                        businesses in the Eastern Cape.</p>
+                    <button class="btn btn-accent">Find Funding</button>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="resource-title">Mentorship Network</h3>
+                    <p class="resource-description">Connect with experienced entrepreneurs and industry experts who can
+                        guide your business journey.</p>
+                    <button class="btn btn-accent">Find a Mentor</button>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="resource-title">Business Network</h3>
+                    <p class="resource-description">Join a community of green entrepreneurs and access networking events
+                        and opportunities.</p>
+                    <button class="btn btn-accent">Join Network</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Success Stories -->
+        <section class="success-stories">
+            <div class="section-header">
+                <h2>Success Stories</h2>
+                <p>Be inspired by youth who have transformed their lives through our programs</p>
+            </div>
+
+            <div class="stories-grid">
+                <div class="story-card">
+                    <div class="story-image">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                            alt="Solar Installation Business">
+                    </div>
+                    <div class="story-content">
+                        <h3 class="story-title">From Student to Solar Entrepreneur</h3>
+                        <p class="story-excerpt">After completing the solar installation course, Zola started her own
+                            solar business and now employs 8 people in her community.</p>
+                        <div class="story-meta">
+                            <span>Zola Mbeki</span>
+                            <span>Solar Solutions EC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-image">
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                            alt="EV Repair Workshop">
+                    </div>
+                    <div class="story-content">
+                        <h3 class="story-title">Building an EV Repair Empire</h3>
+                        <p class="story-excerpt">Lungelo's EV repair workshop now has 3 locations across the Eastern
+                            Cape, servicing both private and commercial vehicles.</p>
+                        <div class="story-meta">
+                            <span>Lungelo Ntshinga</span>
+                            <span>Eastern Cape EV Services</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-image">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                            alt="Data Analytics Startup">
+                    </div>
+                    <div class="story-content">
+                        <h3 class="story-title">Data-Driven Green Solutions</h3>
+                        <p class="story-excerpt">Siphosethu's data analytics startup helps businesses optimize their
+                            energy consumption and reduce costs.</p>
+                        <div class="story-meta">
+                            <span>Siphosethu Jali</span>
+                            <span>GreenData Analytics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Start Your Green Career Journey Today</h2>
+            <p>Join hundreds of youth from the Eastern Cape who are building successful careers in the green economy.
+                Get trained, certified, and supported every step of the way.</p>
+            <div class="cta-buttons">
+                <button class="btn btn-white">Register for Training</button>
+                <button class="btn btn-transparent">Explore Entrepreneurship</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Training Programs</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">EV Repair & Maintenance</a>
+                        <a href="#" class="footer-link">Solar Installation</a>
+                        <a href="#" class="footer-link">Data Management</a>
+                        <a href="#" class="footer-link">Certificate Programs</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Entrepreneurship</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Business Planning</a>
+                        <a href="#" class="footer-link">Funding Opportunities</a>
+                        <a href="#" class="footer-link">Mentorship Network</a>
+                        <a href="#" class="footer-link">Success Stories</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Partnerships</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">NYDA</a>
+                        <a href="#" class="footer-link">YES Program</a>
+                        <a href="#" class="footer-link">SETA Accreditation</a>
+                        <a href="#" class="footer-link">FET Colleges</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">youth@ecevassist.co.za</a>
+                        <a href="#" class="footer-link">041 123 4567</a>
+                        <a href="#" class="footer-link">Gqeberha, Eastern Cape</a>
+                        <a href="#" class="footer-link">Support Center</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 EC EV Youth Portal. All rights reserved. Supporting the Eastern Cape Automotive
+                    Masterplan 2035 and youth empowerment initiatives.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h2>Welcome to EC EV Youth Portal</h2>
+                <button class="auth-close" id="authClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab">Login</button>
+                <button class="auth-tab" id="registerTab">Register</button>
+            </div>
+
+            <div class="auth-content">
+                <!-- Login Form -->
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginEmail">Email Address</label>
+                        <input type="email" class="form-input" id="loginEmail" placeholder="Enter your email">
+                        <div class="form-error" id="loginEmailError">Please enter a valid email address</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password">
+                        <div class="form-error" id="loginPasswordError">Password is required</div>
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+
+                    <div class="form-forgot">
+                        <a href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="auth-submit">Login</button>
+
+                    <div class="auth-divider">
+                        <span>or continue with</span>
+                    </div>
+
+                    <div class="social-login">
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-google"></i>
+                            <span>Google</span>
+                        </button>
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </button>
+                    </div>
+
+                    <div class="auth-switch">
+                        Don't have an account? <a href="#" id="switchToRegister">Register here</a>
+                    </div>
+                </form>
+
+                <!-- Registration Form -->
+                <form class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="registerName">Full Name</label>
+                        <input type="text" class="form-input" id="registerName" placeholder="Enter your full name">
+                        <div class="form-error" id="registerNameError">Name is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerEmail">Email Address</label>
+                        <input type="email" class="form-input" id="registerEmail" placeholder="Enter your email">
+                        <div class="form-error" id="registerEmailError">Please enter a valid email address</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerPassword">Password</label>
+                        <input type="password" class="form-input" id="registerPassword" placeholder="Create a password">
+                        <div class="form-error" id="registerPasswordError">Password must be at least 8 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                        <input type="password" class="form-input" id="confirmPassword"
+                            placeholder="Confirm your password">
+                        <div class="form-error" id="confirmPasswordError">Passwords do not match</div>
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="agreeTerms">
+                        <label for="agreeTerms">I agree to the Terms of Service and Privacy Policy</label>
+                    </div>
+
+                    <button type="submit" class="auth-submit">Create Account</button>
+
+                    <div class="auth-divider">
+                        <span>or sign up with</span>
+                    </div>
+
+                    <div class="social-login">
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-google"></i>
+                            <span>Google</span>
+                        </button>
+                        <button type="button" class="social-btn">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </button>
+                    </div>
+
+                    <div class="auth-switch">
+                        Already have an account? <a href="#" id="switchToLogin">Login here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const authModal = document.getElementById('authModal');
+        const authClose = document.getElementById('authClose');
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Form inputs
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const registerName = document.getElementById('registerName');
+        const registerEmail = document.getElementById('registerEmail');
+        const registerPassword = document.getElementById('registerPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const agreeTerms = document.getElementById('agreeTerms');
+
+        // Error elements
+        const loginEmailError = document.getElementById('loginEmailError');
+        const loginPasswordError = document.getElementById('loginPasswordError');
+        const registerNameError = document.getElementById('registerNameError');
+        const registerEmailError = document.getElementById('registerEmailError');
+        const registerPasswordError = document.getElementById('registerPasswordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+        // Check if user is logged in (for demo purposes)
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+        // Initialize UI based on login state
+        function initializeUI() {
+            if (isLoggedIn) {
+                // Show user menu
+                document.querySelector('.user-menu').style.display = 'flex';
+                document.querySelector('.btn-primary').style.display = 'none';
+            } else {
+                // Show login button
+                document.querySelector('.user-menu').style.display = 'none';
+                document.querySelector('.btn-primary').style.display = 'inline-flex';
+            }
+        }
+
+        // Show auth modal
+        function showAuthModal() {
+            authModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide auth modal
+        function hideAuthModal() {
+            authModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Switch to login tab
+        function switchToLoginTab() {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+        }
+
+        // Switch to register tab
+        function switchToRegisterTab() {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+        }
+
+        // Validate email
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Validate login form
+        function validateLoginForm() {
+            let isValid = true;
+
+            // Reset errors
+            loginEmail.classList.remove('error');
+            loginPassword.classList.remove('error');
+            loginEmailError.classList.remove('show');
+            loginPasswordError.classList.remove('show');
+
+            // Validate email
+            if (!loginEmail.value.trim()) {
+                loginEmail.classList.add('error');
+                loginEmailError.textContent = 'Email is required';
+                loginEmailError.classList.add('show');
+                isValid = false;
+            } else if (!validateEmail(loginEmail.value.trim())) {
+                loginEmail.classList.add('error');
+                loginEmailError.textContent = 'Please enter a valid email address';
+                loginEmailError.classList.add('show');
+                isValid = false;
+            }
+
+            // Validate password
+            if (!loginPassword.value.trim()) {
+                loginPassword.classList.add('error');
+                loginPasswordError.textContent = 'Password is required';
+                loginPasswordError.classList.add('show');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Validate registration form
+        function validateRegisterForm() {
+            let isValid = true;
+
+            // Reset errors
+            registerName.classList.remove('error');
+            registerEmail.classList.remove('error');
+            registerPassword.classList.remove('error');
+            confirmPassword.classList.remove('error');
+            registerNameError.classList.remove('show');
+            registerEmailError.classList.remove('show');
+            registerPasswordError.classList.remove('show');
+            confirmPasswordError.classList.remove('show');
+
+            // Validate name
+            if (!registerName.value.trim()) {
+                registerName.classList.add('error');
+                registerNameError.textContent = 'Name is required';
+                registerNameError.classList.add('show');
+                isValid = false;
+            }
+
+            // Validate email
+            if (!registerEmail.value.trim()) {
+                registerEmail.classList.add('error');
+                registerEmailError.textContent = 'Email is required';
+                registerEmailError.classList.add('show');
+                isValid = false;
+            } else if (!validateEmail(registerEmail.value.trim())) {
+                registerEmail.classList.add('error');
+                registerEmailError.textContent = 'Please enter a valid email address';
+                registerEmailError.classList.add('show');
+                isValid = false;
+            }
+
+            // Validate password
+            if (!registerPassword.value.trim()) {
+                registerPassword.classList.add('error');
+                registerPasswordError.textContent = 'Password is required';
+                registerPasswordError.classList.add('show');
+                isValid = false;
+            } else if (registerPassword.value.trim().length < 8) {
+                registerPassword.classList.add('error');
+                registerPasswordError.textContent = 'Password must be at least 8 characters';
+                registerPasswordError.classList.add('show');
+                isValid = false;
+            }
+
+            // Validate confirm password
+            if (!confirmPassword.value.trim()) {
+                confirmPassword.classList.add('error');
+                confirmPasswordError.textContent = 'Please confirm your password';
+                confirmPasswordError.classList.add('show');
+                isValid = false;
+            } else if (confirmPassword.value.trim() !== registerPassword.value.trim()) {
+                confirmPassword.classList.add('error');
+                confirmPasswordError.textContent = 'Passwords do not match';
+                confirmPasswordError.classList.add('show');
+                isValid = false;
+            }
+
+            // Validate terms agreement
+            if (!agreeTerms.checked) {
+                alert('You must agree to the Terms of Service and Privacy Policy');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+
+            if (validateLoginForm()) {
+                // In a real app, this would send a request to the server
+                // For demo purposes, we'll simulate a successful login
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userName', 'Thando Nkosi');
+                localStorage.setItem('userEmail', loginEmail.value.trim());
+
+                // Update UI
+                initializeUI();
+                hideAuthModal();
+
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.style.position = 'fixed';
+                successMessage.style.top = '20px';
+                successMessage.style.right = '20px';
+                successMessage.style.backgroundColor = 'var(--success)';
+                successMessage.style.color = 'white';
+                successMessage.style.padding = '10px 15px';
+                successMessage.style.borderRadius = '5px';
+                successMessage.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                successMessage.style.zIndex = '1000';
+                successMessage.textContent = 'Login successful! Welcome back, Thando.';
+                document.body.appendChild(successMessage);
+
+                // Remove message after 3 seconds
+                setTimeout(() => {
+                    successMessage.style.opacity = '0';
+                    successMessage.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                        document.body.removeChild(successMessage);
+                    }, 500);
+                }, 3000);
+            }
+        }
+
+        // Handle registration
+        function handleRegister(e) {
+            e.preventDefault();
+
+            if (validateRegisterForm()) {
+                // In a real app, this would send a request to the server
+                // For demo purposes, we'll simulate a successful registration
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userName', registerName.value.trim());
+                localStorage.setItem('userEmail', registerEmail.value.trim());
+
+                // Update UI
+                initializeUI();
+                hideAuthModal();
+
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.style.position = 'fixed';
+                successMessage.style.top = '20px';
+                successMessage.style.right = '20px';
+                successMessage.style.backgroundColor = 'var(--success)';
+                successMessage.style.color = 'white';
+                successMessage.style.padding = '10px 15px';
+                successMessage.style.borderRadius = '5px';
+                successMessage.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                successMessage.style.zIndex = '1000';
+                successMessage.textContent = 'Registration successful! Welcome to EC EV Youth Portal.';
+                document.body.appendChild(successMessage);
+
+                // Remove message after 3 seconds
+                setTimeout(() => {
+                    successMessage.style.opacity = '0';
+                    successMessage.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                        document.body.removeChild(successMessage);
+                    }, 500);
+                }, 3000);
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            // Clear user data
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+
+            // Update UI
+            initializeUI();
+
+            // Hide dropdown
+            userDropdown.classList.remove('active');
+
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.style.position = 'fixed';
+            successMessage.style.top = '20px';
+            successMessage.style.right = '20px';
+            successMessage.style.backgroundColor = 'var(--primary)';
+            successMessage.style.color = 'white';
+            successMessage.style.padding = '10px 15px';
+            successMessage.style.borderRadius = '5px';
+            successMessage.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            successMessage.style.zIndex = '1000';
+            successMessage.textContent = 'You have been logged out successfully.';
+            document.body.appendChild(successMessage);
+
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                successMessage.style.opacity = '0';
+                successMessage.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    document.body.removeChild(successMessage);
+                }, 500);
+            }, 3000);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize UI
+            initializeUI();
+
+            // Auth modal events
+            document.querySelector('.btn-primary').addEventListener('click', showAuthModal);
+            authClose.addEventListener('click', hideAuthModal);
+
+            // Tab switching
+            loginTab.addEventListener('click', switchToLoginTab);
+            registerTab.addEventListener('click', switchToRegisterTab);
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchToRegisterTab();
+            });
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchToLoginTab();
+            });
+
+            // Form submissions
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+
+            // User menu
+            userMenuBtn.addEventListener('click', () => {
+                userDropdown.classList.toggle('active');
+            });
+
+            // Logout
+            logoutBtn.addEventListener('click', handleLogout);
+
+            // Close modal when clicking outside
+            authModal.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    hideAuthModal();
+                }
+            });
+
+            // Close user dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+
+            // Social login buttons (demo only)
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    alert('Social login would be implemented here in a real application');
+                });
+            });
+
+            // Forgot password link
+            document.querySelector('.form-forgot a').addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('Password reset functionality would be implemented here in a real application');
+            });
+        });
+    </script>
+</body>
+
+</html>

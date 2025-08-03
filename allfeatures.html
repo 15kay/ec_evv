@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eastern Cape EV Mobility Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-button.active {
+            background-color: #10B981;
+            color: white;
+        }
+        .solar-panel {
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        .solar-panel:hover {
+            transform: scale(1.05);
+        }
+        .stokvel-card {
+            transition: all 0.3s ease;
+        }
+        .stokvel-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .part-card {
+            transition: all 0.3s ease;
+        }
+        .part-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .chat-message {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        #solarMap {
+            height: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .energy-flow {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 5s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-charging-station text-white text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-gray-900">EC EV Mobility Platform</h1>
+                        <p class="text-xs text-green-600">Eastern Cape Electric Mobility Solutions</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <select id="languageSelector" class="appearance-none bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="en">English</option>
+                            <option value="xh">isiXhosa</option>
+                        </select>
+                        <i class="fas fa-globe absolute right-3 top-3 text-gray-500 pointer-events-none"></i>
+                    </div>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                        <i class="fas fa-user-circle mr-2"></i> Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4" data-i18n="hero-title">Complete EV Mobility Platform</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto" data-i18n="hero-subtitle">
+                Solar planning, shared ownership, parts sourcing, and AI assistance - all in one platform.
+            </p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-xl shadow-lg mb-8">
+            <div class="flex flex-wrap border-b border-gray-200">
+                <button class="tab-button active px-6 py-4 font-medium text-gray-700 hover:text-green-600 transition flex items-center" onclick="switchTab('solar')">
+                    <i class="fas fa-solar-panel mr-2"></i>
+                    <span data-i18n="tab-solar">Solar Planning</span>
+                </button>
+                <button class="tab-button px-6 py-4 font-medium text-gray-700 hover:text-green-600 transition flex items-center" onclick="switchTab('stokvel')">
+                    <i class="fas fa-users mr-2"></i>
+                    <span data-i18n="tab-stokvel">Stokvel Manager</span>
+                </button>
+                <button class="tab-button px-6 py-4 font-medium text-gray-700 hover:text-green-600 transition flex items-center" onclick="switchTab('marketplace')">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    <span data-i18n="tab-marketplace">Parts Marketplace</span>
+                </button>
+                <button class="tab-button px-6 py-4 font-medium text-gray-700 hover:text-green-600 transition flex items-center" onclick="switchTab('assistant')">
+                    <i class="fas fa-robot mr-2"></i>
+                    <span data-i18n="tab-assistant">AI Assistant</span>
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-6">
+                <!-- Solar Planning Dashboard -->
+                <div id="solar" class="tab-content active">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6" data-i18n="solar-title">Microgrid & Solar Planning Dashboard</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Solar Map -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-gray-100 rounded-xl p-4">
+                                <div id="solarMap"></div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <div class="flex space-x-4">
+                                        <button onclick="addSolarPanel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <i class="fas fa-plus mr-2"></i> <span data-i18n="add-panel">Add Panel</span>
+                                        </button>
+                                        <button onclick="addChargingStation()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <i class="fas fa-charging-station mr-2"></i> <span data-i18n="add-station">Add Station</span>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <i class="fas fa-info-circle mr-1"></i> <span data-i18n="drag-items">Drag items to reposition</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Energy Stats -->
+                        <div class="space-y-4">
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="energy-production">Energy Production</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span data-i18n="solar-generation">Solar Generation</span>
+                                            <span class="font-semibold">45.2 kWh</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-600 h-2 rounded-full" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span data-i18n="battery-storage">Battery Storage</span>
+                                            <span class="font-semibold">32.8 kWh</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span data-i18n="grid-export">Grid Export</span>
+                                            <span class="font-semibold">12.4 kWh</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-yellow-600 h-2 rounded-full" style="width: 25%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="cost-analysis">Cost Analysis</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600" data-i18n="initial-cost">Initial Cost</span>
+                                        <span class="font-semibold">R285,000</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600" data-i18n="incentives">Incentives</span>
+                                        <span class="font-semibold text-green-600">-R71,250</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600" data-i18n="annual-savings">Annual Savings</span>
+                                        <span class="font-semibold text-green-600">R45,600</span>
+                                    </div>
+                                    <div class="border-t pt-2 mt-2">
+                                        <div class="flex justify-between">
+                                            <span class="font-semibold" data-i18n="payback-period">Payback Period</span>
+                                            <span class="font-bold text-green-600">4.7 years</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="system-config">System Configuration</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600" data-i18n="panel-count">Solar Panels</span>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="updatePanelCount(-1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
+                                                <i class="fas fa-minus text-xs"></i>
+                                            </button>
+                                            <span id="panelCount" class="font-semibold w-8 text-center">12</span>
+                                            <button onclick="updatePanelCount(1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
+                                                <i class="fas fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600" data-i18n="battery-capacity">Battery Capacity</span>
+                                        <select class="text-sm border border-gray-300 rounded px-2 py-1">
+                                            <option>10 kWh</option>
+                                            <option selected>15 kWh</option>
+                                            <option>20 kWh</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600" data-i18n="charging-stations">Charging Stations</span>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="updateStationCount(-1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
+                                                <i class="fas fa-minus text-xs"></i>
+                                            </button>
+                                            <span id="stationCount" class="font-semibold w-8 text-center">2</span>
+                                            <button onclick="updateStationCount(1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
+                                                <i class="fas fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stokvel Co-Ownership Manager -->
+                <div id="stokvel" class="tab-content">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6" data-i18n="stokvel-title">Stokvel Co-Ownership Manager</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- My Stokvels -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h4 class="text-lg font-semibold text-gray-900" data-i18n="my-stokvels">My Stokvels</h4>
+                                    <button onclick="createStokvel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                        <i class="fas fa-plus mr-2"></i> <span data-i18n="create-stokvel">Create Stokvel</span>
+                                    </button>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <!-- Stokvel Card 1 -->
+                                    <div class="stokvel-card bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900">Gqeberha EV Community</h5>
+                                                <p class="text-sm text-gray-600">5 members • 2 vehicles</p>
+                                            </div>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-4 mb-3">
+                                            <div class="text-center">
+                                                <p class="text-2xl font-bold text-green-600">R2,400</p>
+                                                <p class="text-xs text-gray-600" data-i18n="monthly-contribution">Monthly</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <p class="text-2xl font-bold text-blue-600">85%</p>
+                                                <p class="text-xs text-gray-600" data-i18n="funded">Funded</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <p class="text-2xl font-bold text-purple-600">4</p>
+                                                <p class="text-xs text-gray-600" data-i18n">Months Left</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex -space-x-2">
+                                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">JD</div>
+                                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">PM</div>
+                                                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">TN</div>
+                                                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">+2</div>
+                                            </div>
+                                            <button class="text-green-600 hover:text-green-700 font-medium text-sm">
+                                                <span data-i18n="view-details">View Details</span> <i class="fas fa-arrow-right ml-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Stokvel Card 2 -->
+                                    <div class="stokvel-card bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900">Makhanda Student EV</h5>
+                                                <p class="text-sm text-gray-600">8 members • 1 vehicle</p>
+                                            </div>
+                                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Funding</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-4 mb-3">
+                                            <div class="text-center">
+                                                <p class="text-2xl font-bold text-green-600">R850</p>
+                                                <p class="text-xs text-gray-600" data-i18n="monthly-contribution">Monthly</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <p class="text-2xl font-bold text-blue-600">45%</p>
+                                                <p class="text-xs text-gray-600" data-i18n="funded">Funded</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <p class="text-2xl font-bold text-purple-600">8</p>
+                                                <p class="text-xs text-gray-600" data-i18n">Months Left</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex -space-x-2">
+                                                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">AK</div>
+                                                <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">ZM</div>
+                                                <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">LN</div>
+                                                <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">+5</div>
+                                            </div>
+                                            <button class="text-green-600 hover:text-green-700 font-medium text-sm">
+                                                <span data-i18n="view-details">View Details</span> <i class="fas fa-arrow-right ml-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vehicle Availability -->
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4" data-i18n="vehicle-availability">Vehicle Availability</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-gray-200">
+                                                <th class="text-left py-2" data-i18n="vehicle">Vehicle</th>
+                                                <th class="text-left py-2" data-i18n="monday">Mon</th>
+                                                <th class="text-left py-2" data-i18n="tuesday">Tue</th>
+                                                <th class="text-left py-2" data-i18n="wednesday">Wed</th>
+                                                <th class="text-left py-2" data-i18n="thursday">Thu</th>
+                                                <th class="text-left py-2" data-i18n="friday">Fri</th>
+                                                <th class="text-left py-2" data-i18n="saturday">Sat</th>
+                                                <th class="text-left py-2" data-i18n="sunday">Sun</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium">Nissan Leaf</td>
+                                                <td class="py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">JD</span></td>
+                                                <td class="py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">PM</span></td>
+                                                <td class="py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">JD</span></td>
+                                                <td class="py-3"><span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">TN</span></td>
+                                                <td class="py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">PM</span></td>
+                                                <td class="py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Open</span></td>
+                                                <td class="py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Open</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-3 font-medium">Hyundai Kona</td>
+                                                <td class="py-3"><span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">TN</span></td>
+                                                <td class="py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">JD</span></td>
+                                                <td class="py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">PM</span></td>
+                                                <td class="py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">JD</span></td>
+                                                <td class="py-3"><span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">TN</span></td>
+                                                <td class="py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Open</span></td>
+                                                <td class="py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Open</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stokvel Actions -->
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="quick-actions">Quick Actions</h4>
+                                <div class="space-y-3">
+                                    <button class="w-full bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200 text-left">
+                                        <i class="fas fa-hand-holding-usd mr-3 text-green-600"></i>
+                                        <span data-i18n="make-payment">Make Payment</span>
+                                    </button>
+                                    <button class="w-full bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200 text-left">
+                                        <i class="fas fa-calendar-check mr-3 text-blue-600"></i>
+                                        <span data-i18n="book-vehicle">Book Vehicle</span>
+                                    </button>
+                                    <button class="w-full bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200 text-left">
+                                        <i class="fas fa-chart-line mr-3 text-purple-600"></i>
+                                        <span data-i18n="view-reports">View Reports</span>
+                                    </button>
+                                    <button class="w-full bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200 text-left">
+                                        <i class="fas fa-bullhorn mr-3 text-yellow-600"></i>
+                                        <span data-i18n="create-proposal">Create Proposal</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="upcoming-payments">Upcoming Payments</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="font-medium text-gray-900">Gqeberha EV Community</p>
+                                            <p class="text-sm text-gray-600">Due in 5 days</p>
+                                        </div>
+                                        <span class="font-semibold">R2,400</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="font-medium text-gray-900">Makhanda Student EV</p>
+                                            <p class="text-sm text-gray-600">Due in 12 days</p>
+                                        </div>
+                                        <span class="font-semibold">R850</span>
+                                    </div>
+                                </div>
+                                <button class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                    <span data-i18n="pay-all">Pay All</span>
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="stokvel-benefits">Stokvel Benefits</h4>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="benefit-1">Shared vehicle ownership costs</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="benefit-2">Access to multiple EV models</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="benefit-3">Community support network</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="benefit-4">Group purchasing power</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Parts Marketplace -->
+                <div id="marketplace" class="tab-content">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6" data-i18n="marketplace-title">Smart Parts Marketplace</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- Filters -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white border border-gray-200 rounded-xl p-6 sticky top-24">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="filters">Filters</h4>
+                                
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="category">Category</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                                        <option data-i18n="all-categories">All Categories</option>
+                                        <option data-i18n="batteries">Batteries</option>
+                                        <option data-i18n="charging">Charging Equipment</option>
+                                        <option data-i18n="solar">Solar Components</option>
+                                        <option data-i18n="motors">Motors & Controllers</option>
+                                        <option data-i18n="accessories">Accessories</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="condition">Condition</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2" checked>
+                                            <span class="text-sm" data-i18n="new">New</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2">
+                                            <span class="text-sm" data-i18n="refurbished">Refurbished</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2">
+                                            <span class="text-sm" data-i18n="used">Used</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="price-range">Price Range</label>
+                                    <div class="space-y-2">
+                                        <input type="range" min="0" max="100000" value="50000" class="w-full">
+                                        <div class="flex justify-between text-sm text-gray-600">
+                                            <span>R0</span>
+                                            <span id="priceValue">R50,000</span>
+                                            <span>R100,000+</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="location">Location</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                                        <option data-i18n="all-locations">All Eastern Cape</option>
+                                        <option>Port Elizabeth</option>
+                                        <option>East London</option>
+                                        <option>Gqeberha</option>
+                                        <option>Makhanda</option>
+                                        <option>Mthatha</option>
+                                    </select>
+                                </div>
+                                
+                                <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                    <span data-i18n="apply-filters">Apply Filters</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Parts Listing -->
+                        <div class="lg:col-span-3">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-gray-600" data-i18n="showing">Showing</span>
+                                    <span class="font-semibold">24</span>
+                                    <span class="text-gray-600" data-i18n="of">of</span>
+                                    <span class="font-semibold">87</span>
+                                    <span class="text-gray-600" data-i18n="parts">parts</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600" data-i18n="sort-by">Sort by:</span>
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                                        <option data-i18n="relevance">Relevance</option>
+                                        <option data-i18n="price-low">Price: Low to High</option>
+                                        <option data-i18n="price-high">Price: High to Low</option>
+                                        <option data-i18n="newest">Newest</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Part Card 1 -->
+                                <div class="part-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-battery-full text-6xl text-green-600"></i>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h5 class="font-semibold text-gray-900">Tesla Model 3 Battery</h5>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">New</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">75 kWh Long Range Battery Module</p>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-lg font-bold text-green-600">R45,000</span>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <span class="text-sm ml-1">4.8</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-600 mb-3">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            <span>Port Elizabeth</span>
+                                        </div>
+                                        <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <span data-i18n="inquire">Inquire</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Part Card 2 -->
+                                <div class="part-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-charging-station text-6xl text-blue-600"></i>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h5 class="font-semibold text-gray-900">Level 2 Charger</h5>
+                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Refurb</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">32A EV Charger with WiFi</p>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-lg font-bold text-green-600">R8,500</span>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <span class="text-sm ml-1">4.5</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-600 mb-3">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            <span>East London</span>
+                                        </div>
+                                        <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <span data-i18n="inquire">Inquire</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Part Card 3 -->
+                                <div class="part-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-solar-panel text-6xl text-yellow-600"></i>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h5 class="font-semibold text-gray-900">Solar Panel Kit</h5>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">New</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">5kW Solar Panel System with Inverter</p>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-lg font-bold text-green-600">R65,000</span>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <span class="text-sm ml-1">4.9</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-600 mb-3">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            <span>Gqeberha</span>
+                                        </div>
+                                        <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <span data-i18n="inquire">Inquire</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Part Card 4 -->
+                                <div class="part-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-cogs text-6xl text-purple-600"></i>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h5 class="font-semibold text-gray-900">EV Motor Controller</h5>
+                                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Used</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">150kW Motor Controller for EV Conversion</p>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-lg font-bold text-green-600">R12,000</span>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <span class="text-sm ml-1">4.2</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-600 mb-3">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            <span>Makhanda</span>
+                                        </div>
+                                        <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <span data-i18n="inquire">Inquire</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Part Card 5 -->
+                                <div class="part-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-car-battery text-6xl text-red-600"></i>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h5 class="font-semibold text-gray-900">Leaf Battery Pack</h5>
+                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Refurb</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">40 kWh Nissan Leaf Battery Pack</p>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-lg font-bold text-green-600">R35,000</span>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <span class="text-sm ml-1">4.6</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-600 mb-3">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            <span>Port Elizabeth</span>
+                                        </div>
+                                        <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <span data-i18n="inquire">Inquire</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Part Card 6 -->
+                                <div class="part-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-tools text-6xl text-gray-600"></i>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h5 class="font-semibold text-gray-900">EV Conversion Kit</h5>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">New</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Complete EV Conversion Kit for Vehicles</p>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-lg font-bold text-green-600">R85,000</span>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <span class="text-sm ml-1">4.7</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-600 mb-3">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            <span>East London</span>
+                                        </div>
+                                        <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                                            <span data-i18n="inquire">Inquire</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="flex justify-center mt-8">
+                                <div class="flex space-x-2">
+                                    <button class="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50">
+                                        <i class="fas fa-chevron-left text-gray-600"></i>
+                                    </button>
+                                    <button class="w-10 h-10 bg-green-600 text-white rounded-lg flex items-center justify-center">1</button>
+                                    <button class="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50">2</button>
+                                    <button class="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50">3</button>
+                                    <button class="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50">
+                                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multilingual AI Assistant -->
+                <div id="assistant" class="tab-content">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6" data-i18n="assistant-title">Multilingual AI Assistant</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- Chat Interface -->
+                        <div class="lg:col-span-3">
+                            <div class="bg-white border border-gray-200 rounded-xl h-[600px] flex flex-col">
+                                <!-- Chat Header -->
+                                <div class="p-4 border-b border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-robot text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">EV Assistant</h4>
+                                            <p class="text-sm text-gray-600">Online • Supports English & isiXhosa</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Chat Messages -->
+                                <div id="chatMessages" class="flex-1 p-4 overflow-y-auto">
+                                    <div class="chat-message mb-4">
+                                        <div class="flex items-start">
+                                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="fas fa-robot text-green-600 text-sm"></i>
+                                            </div>
+                                            <div class="bg-gray-100 rounded-lg p-3 max-w-md">
+                                                <p class="text-sm text-gray-800" data-i18n="assistant-greeting">Hello! I'm your EV assistant. How can I help you today with your electric mobility needs?</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Chat Input -->
+                                <div class="p-4 border-t border-gray-200">
+                                    <div class="flex space-x-2">
+                                        <input type="text" id="chatInput" placeholder="Type your message..." 
+                                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        <button onclick="sendMessage()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        <button onclick="sendQuickMessage('charging')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full">
+                                            <span data-i18n="quick-charging">Charging stations</span>
+                                        </button>
+                                        <button onclick="sendQuickMessage('cost')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full">
+                                            <span data-i18n="quick-cost">Cost comparison</span>
+                                        </button>
+                                        <button onclick="sendQuickMessage('maintenance')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full">
+                                            <span data-i18n="quick-maintenance">Maintenance</span>
+                                        </button>
+                                        <button onclick="sendQuickMessage('incentives')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full">
+                                            <span data-i18n="quick-incentives">Incentives</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Assistant Features -->
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="assistant-capabilities">Assistant Capabilities</h4>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-language text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="capability-1">Bilingual support (English/isiXhosa)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-map-marked-alt text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="capability-2">Charging station locator</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-calculator text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="capability-3">Cost savings calculator</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-tools text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="capability-4">Maintenance guidance</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-leaf text-green-600 mr-2 mt-0.5"></i>
+                                        <span data-i18n="capability-5">Environmental impact info</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="language-settings">Language Settings</h4>
+                                <div class="space-y-3">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="chatLanguage" value="en" checked class="mr-2">
+                                        <span class="text-sm">English</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="chatLanguage" value="xh" class="mr-2">
+                                        <span class="text-sm">isiXhosa</span>
+                                    </label>
+                                </div>
+                                <button onclick="clearChat()" class="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition">
+                                    <span data-i18n="clear-chat">Clear Chat</span>
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-xl p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4" data-i18n="popular-questions">Popular Questions</h4>
+                                <div class="space-y-2">
+                                    <button onclick="sendQuickMessage('range')" class="w-full text-left text-sm text-gray-700 hover:text-green-600 p-2 rounded hover:bg-gray-50">
+                                        <span data-i18n="question-range">What is the range of EVs?</span>
+                                    </button>
+                                    <button onclick="sendQuickMessage('charging-time')" class="w-full text-left text-sm text-gray-700 hover:text-green-600 p-2 rounded hover:bg-gray-50">
+                                        <span data-i18n="question-charging">How long does charging take?</span>
+                                    </button>
+                                    <button onclick="sendQuickMessage('battery-life')" class="w-full text-left text-sm text-gray-700 hover:text-green-600 p-2 rounded hover:bg-gray-50">
+                                        <span data-i18n="question-battery">How long do batteries last?</span>
+                                    </button>
+                                    <button onclick="sendQuickMessage('weather')" class="w-full text-left text-sm text-gray-700 hover:text-green-600 p-2 rounded hover:bg-gray-50">
+                                        <span data-i18n="question-weather">How does weather affect range?</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-charging-station text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">EC EV Platform</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Comprehensive EV mobility solutions for the Eastern Cape.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Features</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Solar Planning</li>
+                        <li>Stokvel Manager</li>
+                        <li>Parts Marketplace</li>
+                        <li>AI Assistant</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>User Guides</li>
+                        <li>API Documentation</li>
+                        <li>Community Forum</li>
+                        <li>Support Center</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        Contact Support
+                    </button>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 EC EV Mobility Platform. Supporting the Eastern Cape Automotive Masterplan 2035.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                "hero-title": "Complete EV Mobility Platform",
+                "hero-subtitle": "Solar planning, shared ownership, parts sourcing, and AI assistance - all in one platform.",
+                "tab-solar": "Solar Planning",
+                "tab-stokvel": "Stokvel Manager",
+                "tab-marketplace": "Parts Marketplace",
+                "tab-assistant": "AI Assistant",
+                "solar-title": "Microgrid & Solar Planning Dashboard",
+                "add-panel": "Add Panel",
+                "add-station": "Add Station",
+                "drag-items": "Drag items to reposition",
+                "energy-production": "Energy Production",
+                "solar-generation": "Solar Generation",
+                "battery-storage": "Battery Storage",
+                "grid-export": "Grid Export",
+                "cost-analysis": "Cost Analysis",
+                "initial-cost": "Initial Cost",
+                "incentives": "Incentives",
+                "annual-savings": "Annual Savings",
+                "payback-period": "Payback Period",
+                "system-config": "System Configuration",
+                "panel-count": "Solar Panels",
+                "battery-capacity": "Battery Capacity",
+                "charging-stations": "Charging Stations",
+                "stokvel-title": "Stokvel Co-Ownership Manager",
+                "my-stokvels": "My Stokvels",
+                "create-stokvel": "Create Stokvel",
+                "monthly-contribution": "Monthly",
+                "funded": "Funded",
+                "view-details": "View Details",
+                "vehicle-availability": "Vehicle Availability",
+                "vehicle": "Vehicle",
+                "monday": "Mon",
+                "tuesday": "Tue",
+                "wednesday": "Wed",
+                "thursday": "Thu",
+                "friday": "Fri",
+                "saturday": "Sat",
+                "sunday": "Sun",
+                "quick-actions": "Quick Actions",
+                "make-payment": "Make Payment",
+                "book-vehicle": "Book Vehicle",
+                "view-reports": "View Reports",
+                "create-proposal": "Create Proposal",
+                "upcoming-payments": "Upcoming Payments",
+                "pay-all": "Pay All",
+                "stokvel-benefits": "Stokvel Benefits",
+                "benefit-1": "Shared vehicle ownership costs",
+                "benefit-2": "Access to multiple EV models",
+                "benefit-3": "Community support network",
+                "benefit-4": "Group purchasing power",
+                "marketplace-title": "Smart Parts Marketplace",
+                "filters": "Filters",
+                "category": "Category",
+                "all-categories": "All Categories",
+                "batteries": "Batteries",
+                "charging": "Charging Equipment",
+                "solar": "Solar Components",
+                "motors": "Motors & Controllers",
+                "accessories": "Accessories",
+                "condition": "Condition",
+                "new": "New",
+                "refurbished": "Refurbished",
+                "used": "Used",
+                "price-range": "Price Range",
+                "location": "Location",
+                "all-locations": "All Eastern Cape",
+                "apply-filters": "Apply Filters",
+                "showing": "Showing",
+                "of": "of",
+                "parts": "parts",
+                "sort-by": "Sort by:",
+                "relevance": "Relevance",
+                "price-low": "Price: Low to High",
+                "price-high": "Price: High to Low",
+                "newest": "Newest",
+                "inquire": "Inquire",
+                "assistant-title": "Multilingual AI Assistant",
+                "assistant-greeting": "Hello! I'm your EV assistant. How can I help you today with your electric mobility needs?",
+                "assistant-capabilities": "Assistant Capabilities",
+                "capability-1": "Bilingual support (English/isiXhosa)",
+                "capability-2": "Charging station locator",
+                "capability-3": "Cost savings calculator",
+                "capability-4": "Maintenance guidance",
+                "capability-5": "Environmental impact info",
+                "language-settings": "Language Settings",
+                "clear-chat": "Clear Chat",
+                "popular-questions": "Popular Questions",
+                "question-range": "What is the range of EVs?",
+                "question-charging": "How long does charging take?",
+                "question-battery": "How long do batteries last?",
+                "question-weather": "How does weather affect range?",
+                "quick-charging": "Charging stations",
+                "quick-cost": "Cost comparison",
+                "quick-maintenance": "Maintenance",
+                "quick-incentives": "Incentives"
+            },
+            xh: {
+                "hero-title": "Iplathformom Ephelele yoHamba lweEV",
+                "hero-subtitle": "Uyilo loMoya, ulawulo lwabasebenzisana nokuqulunqa izixhobo, zonke kwiplathformom enye.",
+                "tab-solar": "Uyilo loMoya",
+                "tab-stokvel": "UmLawuli weStokvel",
+                "tab-marketplace": "Uthengiso lweQaphelo",
+                "tab-assistant": "UmNcedisi we-AI",
+                "solar-title": "IDashboard yeMicrogrid & Uyilo loMoya",
+                "add-panel": "Yongeza iPanel",
+                "add-station": "Yongeza iStesheni",
+                "drag-items": "Tshixa izinto ukuze uzitshise",
+                "energy-production": "Ukukhiqiza Amandla",
+                "solar-generation": "Ukukhiqiza koMoya",
+                "battery-storage": "Ugcino loBhetri",
+                "grid-export": "Ukuthumela kwiGrid",
+                "cost-analysis": "Uhlalutyo lwexabiso",
+                "initial-cost": "Ixabiso lokuqala",
+                "incentives": "Iincentives",
+                "annual-savings": "Ugcino lonyaka",
+                "payback-period": "Uxanduva lokubuyisela",
+                "system-config": "Uqwalaselo lweSystem",
+                "panel-count": "IiPanel zoMoya",
+                "battery-capacity": "Umandla loBhetri",
+                "charging-stations": "Iistesheni zokushaja",
+                "stokvel-title": "UmLawuli weStokvel Co-Ownership",
+                "my-stokvels": "IiStokvel zam",
+                "create-stokvel": "Yakha iStokvel",
+                "monthly-contribution": "Ngenyanga",
+                "funded": "Ifinansiwe",
+                "view-details": "Buka iinkcukacha",
+                "vehicle-availability": "Ukufumaneka kweVekile",
+                "vehicle": "Iveki",
+                "monday": "Mvu",
+                "tuesday": "Bin",
+                "wednesday": "Tha",
+                "thursday": "Sin",
+                "friday": "Hla",
+                "saturday": "Mgq",
+                "sunday": "Caw",
+                "quick-actions": "Izenzo ezisheshayo",
+                "make-payment": "Yenza ukhawulo",
+                "book-vehicle": "Bhuka iveki",
+                "view-reports": "Buka iingxelo",
+                "create-proposal": "Yakha ucelo",
+                "upcoming-payments": "Ukukhawula okuza kufika",
+                "pay-all": "Khawula konke",
+                "stokvel-benefits": "Iinzuzo zeStokvel",
+                "benefit-1": "Uxanduva olubhekiswe kwezixhobo zokuhamba",
+                "benefit-2": "Ufikelelo kumodeli ezahlukeneyo zeEV",
+                "benefit-3": "Uxanduva lomphakathi woluntu",
+                "benefit-4": "Amandla okuthenga iqela",
+                "marketplace-title": "Imarketplace eqingqiweyo yeQaphelo",
+                "filters": "Iifayili",
+                "category": "Udidi",
+                "all-categories": "Zonke Iididi",
+                "batteries": "Iibhetri",
+                "charging": "Iqondo lokushaja",
+                "solar": "Iingxenye zomoya",
+                "motors": "Imoto & Iqondo lokulawula",
+                "accessories": "Izixhobo ezongeziweyo",
+                "condition": "Uxanduva",
+                "new": "Intsha",
+                "refurbished": "Ihanjiwe",
+                "used": "Isetyenziswe",
+                "price-range": "Uluhlu lwamaxabiso",
+                "location": "Indawo",
+                "all-locations": "Zonke iindawo zeMpuma-Koloni",
+                "apply-filters": "Sebenzisa iifayili",
+                "showing": "Ukubonisa",
+                "of": "kok",
+                "parts": "iqaphelo",
+                "sort-by": "Hlela nge:",
+                "relevance": "Uxanduva",
+                "price-low": "Ixabiso: Ukusuka ephantsi ukuya ephezulu",
+                "price-high": "Ixabiso: Ukusuka ephezulu ukuya ephantsi",
+                "newest": "Intsha",
+                "inquire": "Buza",
+                "assistant-title": "UmNcedisi we-AI olimi ezininzi",
+                "assistant-greeting": "Molo! NdingumNcedisi wakho weEV. Ndingakunceda nantoni na namhlanje nokuqhubeka kwakho kwezixhobo zokuhaba?",
+                "assistant-capabilities": "Ikhono lomNcedisi",
+                "capability-1": "Uxanduva lolwimi (isiNgesi/isiXhosa)",
+                "capability-2": "Ufumani iistesheni zokushaja",
+                "capability-3": "Isixhobo sokubala ugcino",
+                "capability-4": "Ulawulo lokugqibela",
+                "capability-5": "Ulwazi lomphefumlo oluchasene neqondo lobushushu",
+                "language-settings": "Imimiselo yolwimi",
+                "clear-chat": "Cima iChat",
+                "popular-questions": "Imibuz ethandwayo",
+                "question-range": "Yimalini i-range yeEV?",
+                "question-charging": "Ixesha elingakanani lokushaja?",
+                "question-battery": "Iibhetri zidlala ixesha elingakanani?",
+                "question-weather": "Imithi yeqondo lobushushu ibangela ukutshixa kwi-range?",
+                "quick-charging": "Iistesheni zokushaja",
+                "quick-cost": "Ulinganiso lwexabiso",
+                "quick-maintenance": "Ukugqibela",
+                "quick-incentives": "Iincentives"
+            }
+        };
+
+        // Current language
+        let currentLanguage = 'en';
+
+        // Initialize solar map
+        let solarMap;
+        let solarMarkers = [];
+
+        function initSolarMap() {
+            solarMap = L.map('solarMap').setView([-33.0245, 27.8995], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(solarMap);
+
+            // Add initial solar panel
+            const initialPanel = L.marker([-33.0245, 27.8995], {
+                icon: L.divIcon({
+                    html: '<i class="fas fa-solar-panel text-yellow-500 text-2xl"></i>',
+                    iconSize: [30, 30],
+                    className: 'custom-div-icon'
+                }),
+                draggable: true
+            }).addTo(solarMap);
+
+            solarMarkers.push(initialPanel);
+
+            // Add initial charging station
+            const initialStation = L.marker([-33.0300, 27.9050], {
+                icon: L.divIcon({
+                    html: '<i class="fas fa-charging-station text-blue-500 text-2xl"></i>',
+                    iconSize: [30, 30],
+                    className: 'custom-div-icon'
+                }),
+                draggable: true
+            }).addTo(solarMap);
+
+            solarMarkers.push(initialStation);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.closest('.tab-button').classList.add('active');
+            
+            // Initialize map if solar tab is selected
+            if (tabName === 'solar' && !solarMap) {
+                setTimeout(initSolarMap, 100);
+            }
+        }
+
+        // Language switching
+        document.getElementById('languageSelector').addEventListener('change', function() {
+            currentLanguage = this.value;
+            updateLanguage();
+        });
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+        }
+
+        // Solar planning functions
+        function addSolarPanel() {
+            const center = solarMap.getCenter();
+            const panel = L.marker([center.lat + 0.01, center.lng + 0.01], {
+                icon: L.divIcon({
+                    html: '<i class="fas fa-solar-panel text-yellow-500 text-2xl"></i>',
+                    iconSize: [30, 30],
+                    className: 'custom-div-icon'
+                }),
+                draggable: true
+            }).addTo(solarMap);
+            
+            solarMarkers.push(panel);
+            updatePanelCount(1);
+        }
+
+        function addChargingStation() {
+            const center = solarMap.getCenter();
+            const station = L.marker([center.lat - 0.01, center.lng - 0.01], {
+                icon: L.divIcon({
+                    html: '<i class="fas fa-charging-station text-blue-500 text-2xl"></i>',
+                    iconSize: [30, 30],
+                    className: 'custom-div-icon'
+                }),
+                draggable: true
+            }).addTo(solarMap);
+            
+            solarMarkers.push(station);
+            updateStationCount(1);
+        }
+
+        function updatePanelCount(change) {
+            const countElement = document.getElementById('panelCount');
+            let count = parseInt(countElement.textContent);
+            count = Math.max(1, count + change);
+            countElement.textContent = count;
+        }
+
+        function updateStationCount(change) {
+            const countElement = document.getElementById('stationCount');
+            let count = parseInt(countElement.textContent);
+            count = Math.max(1, count + change);
+            countElement.textContent = count;
+        }
+
+        // Stokvel functions
+        function createStokvel() {
+            alert('Stokvel creation form would open here');
+        }
+
+        // Chat functions
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage(message, 'user');
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const response = generateAIResponse(message);
+                    addChatMessage(response, 'assistant');
+                }, 1000);
+            }
+        }
+
+        function sendQuickMessage(topic) {
+            const quickMessages = {
+                'charging': 'Where can I find charging stations in the Eastern Cape?',
+                'cost': 'How much can I save by switching to an EV?',
+                'maintenance': 'What maintenance do EVs require?',
+                'incentives': 'What incentives are available for EV owners?',
+                'range': 'What is the typical range of electric vehicles?',
+                'charging-time': 'How long does it take to charge an EV?',
+                'battery-life': 'How long do EV batteries last?',
+                'weather': 'How does weather affect EV range?'
+            };
+            
+            const message = quickMessages[topic];
+            if (message) {
+                document.getElementById('chatInput').value = message;
+                sendMessage();
+            }
+        }
+
+        function addChatMessage(message, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message mb-4';
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex items-start justify-end">
+                        <div class="bg-green-600 text-white rounded-lg p-3 max-w-md">
+                            <p class="text-sm">${message}</p>
+                        </div>
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center ml-3">
+                            <i class="fas fa-user text-gray-600 text-sm"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-robot text-green-600 text-sm"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-3 max-w-md">
+                            <p class="text-sm text-gray-800">${message}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function generateAIResponse(userMessage) {
+            const responses = {
+                en: {
+                    'charging': 'There are over 50 charging stations across the Eastern Cape. You can find them in major cities like Port Elizabeth, East London, and Makhanda. Would you like me to show you the nearest ones?',
+                    'cost': 'On average, EV owners save 60-80% on fuel costs compared to petrol vehicles. With electricity rates in the Eastern Cape, you could save approximately R15,000 - R20,000 per year depending on your mileage.',
+                    'maintenance': 'EVs have fewer moving parts and require less maintenance than traditional vehicles. You\'ll save on oil changes, spark plugs, and exhaust system repairs. Main maintenance includes tire rotation, brake fluid changes, and battery health checks.',
+                    'incentives': 'The Eastern Cape offers several incentives for EV owners, including reduced licensing fees, potential tax rebates, and special electricity tariffs for EV charging. Some municipalities also offer free parking for EVs.',
+                    'range': 'Most modern EVs have a range between 250-500 km on a single charge. Factors like driving style, terrain, and weather can affect the actual range. The Eastern Cape\'s varied terrain makes it important to plan your trips.',
+                    'charging-time': 'Charging time depends on the charger type. Level 1 (standard outlet) takes 8-12 hours, Level 2 (240V) takes 4-6 hours, and DC fast charging can get you to 80% in 30-45 minutes.',
+                    'battery-life': 'EV batteries typically last 8-15 years or 160,000-200,000 km. Most manufacturers offer 8-year/160,000 km warranties. Battery degradation is gradual, with most retaining 70-80% capacity after 8 years.',
+                    'weather': 'Cold weather can reduce EV range by 20-40% due to battery efficiency and heating needs. Hot weather can also affect range if you\'re using air conditioning. The Eastern Cape\'s mild climate is actually quite favorable for EVs.'
+                },
+                xh: {
+                    'charging': 'Kukhona iistesheni zokushaja ezingaphezu kwe-50 kwiMpuma-Koloni. Ungazifumeka kwidolophu ezinkulu njengePort Elizabeth, East London, neMakhanda. Ungathanda ukubonisa ezo zikufutshane?',
+                    'cost': 'Ngokubalulekileyo, abanikazi beEV bagcina i-60-80% kamaxabiso etyeni afanayo neePetrol. Ngamaxabiso ombane weMpuma-Koloni, unokugcina malunga neR15,000 - R20,000 ngonyaka okuqukethwe ngokujija kwakho.',
+                    'maintenance': 'IiEV zineengxaki ezincinci zokuhamba kwaye zifuna ukuhlalutya oluthe chwe kunezixhobo zokuhanya ezizenzekelayo. Uya kugcina kwiintlalo zetire, utshintsho lwe-brake fluid, kunye nokujonga ukuziphatha kwebhetri.',
+                    'incentives': 'I-Mpuma-Koloni inikeza iincentives ezahlukeneyo kwabanikazi beEV, afaka iifee ezincinci zelayisensi, iirebates zentela, kunye neetariffs ezahlukeneyo zombane zokushaja kweEV. Ezinye iimunicipality zinikezela nokuqhuba mahala kwiEV.',
+                    'range': 'Ezinye iEV zanamhlanje zine-range phakathi kwe-250-500 km ngeseshani elinye. Iingcaciso ezifana nobuchule bokujija, uhlaba, kunye nomoya obandayo zingathinta umda wenani. Uhlaba oluhlukileyo lweMpuma-Koloni lunokufuna ukuhlela ulwandle lwakho.',
+                    'charging-time': 'Ixesha lokushaja luncike kuhlobo loqhubiso. Level 1 (i-outlet esisiseko) ithatha iiyure ezili-8-12, Level 2 (240V) ithatha iiyure ezili-4-6, kunye nokushaja kweDC fast kungakunika ukufikelela kwi-80% ngemizuzu engama-30-45.',
+                    'battery-life': 'Iibhetri zeEV zidlala ngokuqhelekileyo iiyure ezili-8-15 okanye i-160,000-200,000 km. Abavelisi abaninzi banikeza iwaranties zangama-8 nyaka/160,000 km. Ukunciphisa kwebhetri kuyagqibeka ngokuhamba kwexesha, ezininzi zigcina i-70-80% kamandla emva kwe-8 nyaka.',
+                    'weather': 'Ubushushu obuncinci bunganciphisa umda weEV nge-20-40 ngenxa yesakhono sebattery kunye nokufuneka kushushu. Ubushushu obushushuyo nangokunjalo bunokuthinta umda xa usebenzisa i-air conditioner. Umoya ochanekileyo weMpuma-Koloni uyakuhambelana kakuhle neEV.'
+                }
+            };
+            
+            // Simple keyword matching
+            const lowerMessage = userMessage.toLowerCase();
+            if (lowerMessage.includes('charg') || lowerMessage.includes('station')) {
+                return responses[currentLanguage]['charging'];
+            } else if (lowerMessage.includes('cost') || lowerMessage.includes('save') || lowerMessage.includes('money')) {
+                return responses[currentLanguage]['cost'];
+            } else if (lowerMessage.includes('maint') || lowerMessage.includes('service')) {
+                return responses[currentLanguage]['maintenance'];
+            } else if (lowerMessage.includes('incent') || lowerMessage.includes('rebate') || lowerMessage.includes('discount')) {
+                return responses[currentLanguage]['incentives'];
+            } else if (lowerMessage.includes('range') || lowerMessage.includes('distance')) {
+                return responses[currentLanguage]['range'];
+            } else if (lowerMessage.includes('time') || lowerMessage.includes('how long')) {
+                return responses[currentLanguage]['charging-time'];
+            } else if (lowerMessage.includes('battery') || lowerMessage.includes('life')) {
+                return responses[currentLanguage]['battery-life'];
+            } else if (lowerMessage.includes('weather') || lowerMessage.includes('temperature') || lowerMessage.includes('cold')) {
+                return responses[currentLanguage]['weather'];
+            } else {
+                return currentLanguage === 'en' 
+                    ? 'I understand you\'re asking about EVs. Could you please be more specific about what information you need? I can help with charging stations, costs, maintenance, incentives, and more.'
+                    : 'Ndiya kuva ucela ulwazi malunga neEV. Ungacela ukuba ngqinelane ngolwimi olufunekayo? Ndingakunceda ngeestesheni zokushaja, iimaxabiso, ukuhlalutya, iincentives, nezinye iingcaciso.';
+            }
+        }
+
+        function clearChat() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div class="chat-message mb-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-robot text-green-600 text-sm"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-3 max-w-md">
+                            <p class="text-sm text-gray-800" data-i18n="assistant-greeting">${translations[currentLanguage]['assistant-greeting']}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Price range slider
+        document.querySelector('input[type="range"]').addEventListener('input', function() {
+            document.getElementById('priceValue').textContent = 'R' + parseInt(this.value).toLocaleString();
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize solar map if it's the active tab
+            if (document.getElementById('solar').classList.contains('active')) {
+                initSolarMap();
+            }
+            
+            // Chat input enter key
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

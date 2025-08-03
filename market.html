@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en" class="geist_e531dabc-module__QGiZLq__variable geist_mono_68a01160-module__YLcDdW__variable">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EC EV Marketplace - Sustainable Mobility Solutions for Eastern Cape</title>
+    <meta name="description" content="Discover and compare electric vehicles, solar panels, e-bikes, and scooters in the Eastern Cape. Find the perfect sustainable mobility solution for your needs.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #16a34a;
+            --primary-light: #22c55e;
+            --primary-dark: #15803d;
+            --secondary: #047857;
+            --background: #f0fdf4;
+            --card-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border: #bbf7d0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(to bottom right, var(--background), #dcfce7);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Navigation */
+        nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+            padding: 0 1.5rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 2xl;
+            margin: 0 auto 2rem;
+        }
+        
+        .search-container {
+            max-width: 2xl;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .filter-select {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            background-color: white;
+            font-size: 0.875rem;
+        }
+        
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        .category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background-color: white;
+            border: 1px solid var(--border);
+            min-width: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .category:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category.active {
+            border-color: var(--primary);
+            background-color: rgba(22, 163, 74, 0.05);
+        }
+        
+        .category-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .category-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        /* Product Grid */
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+        }
+        
+        .products-count {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .sort-select {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            background-color: white;
+            font-size: 0.875rem;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .product-image {
+            height: 200px;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-category {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        
+        .product-specs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .product-spec {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .spec-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .spec-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .compare-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Product Detail */
+        .product-detail {
+            display: none;
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .product-detail.active {
+            display: block;
+        }
+        
+        .detail-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .detail-image {
+            flex: 1;
+            max-width: 500px;
+            height: 400px;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .detail-info {
+            flex: 1;
+        }
+        
+        .detail-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-category {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .detail-specs {
+            margin-top: 2rem;
+        }
+        
+        .detail-specs h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border-radius: 0.375rem;
+        }
+        
+        .spec-name {
+            font-weight: 500;
+        }
+        
+        .spec-value {
+            color: var(--text-secondary);
+        }
+        
+        /* Comparison Bar */
+        .comparison-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid var(--border);
+            padding: 1rem;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            z-index: 40;
+        }
+        
+        .comparison-bar.active {
+            transform: translateY(0);
+        }
+        
+        .comparison-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .comparison-items {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .comparison-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f9fafb;
+            border-radius: 0.375rem;
+        }
+        
+        .comparison-item img {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.25rem;
+            object-fit: cover;
+        }
+        
+        .comparison-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: white;
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .products-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .detail-header {
+                flex-direction: column;
+            }
+            
+            .comparison-bar {
+                padding: 0.75rem;
+            }
+            
+            .comparison-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">EC</div>
+                <div class="logo-text">
+                    <h1>EC EV Connect</h1>
+                    <p>Eastern Cape Sustainable Solutions</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="solutions.html" class="nav-link">Core Values</a>
+                <a href="marketplace.html" class="nav-link active">Marketplace</a>
+                <a href="portal.html" class="nav-link">Youth Portal</a>
+                <!-- <a href="charging.html" class="nav-link">Charging Stations</a>
+                <a href="calculator.html" class="nav-link">Calculator</a> -->
+                <a href="learn more/index.html" class="nav-link">Learn More</a>
+                <button class="btn btn-primary">Log/Register</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Eastern Cape Sustainable Mobility Marketplace</h1>
+            <p>Discover and compare electric vehicles, solar panels, e-bikes, and scooters from trusted suppliers across the Eastern Cape</p>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search for products, brands, or categories...">
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">Price Range</label>
+                <select class="filter-select">
+                    <option>All Prices</option>
+                    <option>Under R50,000</option>
+                    <option>R50,000 - R100,000</option>
+                    <option>R100,000 - R300,000</option>
+                    <option>R300,000 - R500,000</option>
+                    <option>Over R500,000</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Brand</label>
+                <select class="filter-select">
+                    <option>All Brands</option>
+                    <option>Tesla</option>
+                    <option>Nissan</option>
+                    <option>BMW</option>
+                    <option>Jaguar</option>
+                    <option>Volvo</option>
+                    <option>Toyota</option>
+                    <option>Honda</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Location</label>
+                <select class="filter-select">
+                    <option>All Locations</option>
+                    <option>Gqeberha (Port Elizabeth)</option>
+                    <option>East London</option>
+                    <option>Mthatha</option>
+                    <option>Queenstown</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Condition</label>
+                <select class="filter-select">
+                    <option>All Conditions</option>
+                    <option>New</option>
+                    <option>Used</option>
+                    <option>Certified Pre-owned</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <div class="category active" data-category="all">
+                <i class="fas fa-th category-icon"></i>
+                <span class="category-name">All Products</span>
+            </div>
+            <div class="category" data-category="ev">
+                <i class="fas fa-car-side category-icon"></i>
+                <span class="category-name">Electric Vehicles</span>
+            </div>
+            <div class="category" data-category="solar">
+                <i class="fas fa-solar-panel category-icon"></i>
+                <span class="category-name">Solar Panels</span>
+            </div>
+            <div class="category" data-category="ebike">
+                <i class="fas fa-bicycle category-icon"></i>
+                <span class="category-name">E-Bikes</span>
+            </div>
+            <div class="category" data-category="scooter">
+                <i class="fas fa-motorcycle category-icon"></i>
+                <span class="category-name">E-Scooters</span>
+            </div>
+        </div>
+
+        <!-- Products Header -->
+        <div class="products-header">
+            <div class="products-count">Showing 12 of 48 products</div>
+            <select class="sort-select">
+                <option>Sort by: Featured</option>
+                <option>Sort by: Price (Low to High)</option>
+                <option>Sort by: Price (High to Low)</option>
+                <option>Sort by: Newest First</option>
+                <option>Sort by: Most Popular</option>
+            </select>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid">
+            <!-- Product 1 - Electric Vehicle -->
+            <div class="product-card" data-id="1" data-category="ev">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1560917909-28b1d9a6acd8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Tesla Model 3">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Electric Vehicle</div>
+                    <h3 class="product-title">Tesla Model 3</h3>
+                    <p class="product-description">Long-range electric sedan with autopilot capabilities and premium interior features.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">614 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Acceleration</span>
+                            <span class="spec-value">3.3s (0-100)</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R899,000</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-1">
+                            <label for="compare-1">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 - Solar Panel -->
+            <div class="product-card" data-id="2" data-category="solar">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Solar Panel System">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Solar Panel</div>
+                    <h3 class="product-title">Residential Solar Kit 5kW</h3>
+                    <p class="product-description">Complete home solar system with panels, inverter, and battery storage for energy independence.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Power</span>
+                            <span class="spec-value">5 kW</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Battery</span>
+                            <span class="spec-value">10 kWh</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R125,000</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-2">
+                            <label for="compare-2">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 - E-Bike -->
+            <div class="product-card" data-id="3" data-category="ebike">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Electric Bike">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">E-Bike</div>
+                    <h3 class="product-title">Urban Commuter E-Bike</h3>
+                    <p class="product-description">Lightweight electric bike perfect for city commuting with removable battery and multiple riding modes.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">80 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Speed</span>
+                            <span class="spec-value">25 km/h</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R18,500</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-3">
+                            <label for="compare-3">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 - E-Scooter -->
+            <div class="product-card" data-id="4" data-category="scooter">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1579621940536-bd98c4679b9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Electric Scooter">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">E-Scooter</div>
+                    <h3 class="product-title">Foldable E-Scooter Pro</h3>
+                    <p class="product-description">High-performance electric scooter with dual motors, long range, and advanced suspension system.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">65 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Speed</span>
+                            <span class="spec-value">40 km/h</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R12,999</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-4">
+                            <label for="compare-4">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 5 - Electric Vehicle -->
+            <div class="product-card" data-id="5" data-category="ev">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1554224712-d8560f709cbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Nissan Leaf">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Electric Vehicle</div>
+                    <h3 class="product-title">Nissan Leaf</h3>
+                    <p class="product-description">Affordable electric hatchback with advanced safety features and comfortable interior for everyday driving.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">270 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Charging</span>
+                            <span class="spec-value">40 min (80%)</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R485,000</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-5">
+                            <label for="compare-5">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 6 - Solar Panel -->
+            <div class="product-card" data-id="6" data-category="solar">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1622630998477-20aa696ecb05?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Commercial Solar System">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Solar Panel</div>
+                    <h3 class="product-title">Commercial Solar System 10kW</h3>
+                    <p class="product-description">High-efficiency solar panels designed for businesses with monitoring system and grid-tie capability.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Power</span>
+                            <span class="spec-value">10 kW</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Panels</span>
+                            <span class="spec-value">25 x 400W</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R195,000</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-6">
+                            <label for="compare-6">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 7 - E-Bike -->
+            <div class="product-card" data-id="7" data-category="ebike">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1532298227914-01b44ea5c976?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Mountain E-Bike">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">E-Bike</div>
+                    <h3 class="product-title">Mountain E-Bike Pro</h3>
+                    <p class="product-description">Off-road electric bike with full suspension, powerful motor, and durable frame for trail adventures.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">100 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Motor</span>
+                            <span class="spec-value">750W</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R35,000</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-7">
+                            <label for="compare-7">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 8 - E-Scooter -->
+            <div class="product-card" data-id="8" data-category="scooter">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1593941707882-a523ba98cb10?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Premium E-Scooter">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">E-Scooter</div>
+                    <h3 class="product-title">Premium Urban E-Scooter</h3>
+                    <p class="product-description">Sleek and stylish electric scooter with app connectivity, GPS tracking, and advanced safety features.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">45 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Weight</span>
+                            <span class="spec-value">14 kg</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R8,999</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-8">
+                            <label for="compare-8">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 9 - Electric Vehicle -->
+            <div class="product-card" data-id="9" data-category="ev">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1555212697-194d092eb3db?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="BMW iX3">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Electric Vehicle</div>
+                    <h3 class="product-title">BMW iX3</h3>
+                    <p class="product-description">Luxury electric SUV with premium interior, advanced driver assistance, and fast charging capability.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">460 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Charging</span>
+                            <span class="spec-value">34 min (80%)</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R1,150,000</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-9">
+                            <label for="compare-9">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 10 - Solar Panel -->
+            <div class="product-card" data-id="10" data-category="solar">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Portable Solar Generator">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Solar Panel</div>
+                    <h3 class="product-title">Portable Solar Generator</h3>
+                    <p class="product-description">Compact solar power station with foldable panels, ideal for camping, outdoor events, and emergency backup.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Power</span>
+                            <span class="spec-value">500W</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Capacity</span>
+                            <span class="spec-value">1000Wh</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R15,999</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-10">
+                            <label for="compare-10">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 11 - E-Bike -->
+            <div class="product-card" data-id="11" data-category="ebike">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1571068756277-8b3c16f9d60d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cargo E-Bike">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">E-Bike</div>
+                    <h3 class="product-title">Cargo E-Bike</h3>
+                    <p class="product-description">Heavy-duty electric bike with cargo capacity, perfect for deliveries, groceries, and family transportation.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Load Capacity</span>
+                            <span class="spec-value">150 kg</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">70 km</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R28,500</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-11">
+                            <label for="compare-11">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 12 - E-Scooter -->
+            <div class="product-card" data-id="12" data-category="scooter">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1601335589338-9e8e4b5b5aa0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Off-road E-Scooter">
+                </div>
+                <div class="product-content">
+                    <div class="product-category">E-Scooter</div>
+                    <h3 class="product-title">Off-road E-Scooter</h3>
+                    <p class="product-description">All-terrain electric scooter with pneumatic tires, powerful motor, and rugged construction for adventure riding.</p>
+                    <div class="product-specs">
+                        <div class="product-spec">
+                            <span class="spec-label">Range</span>
+                            <span class="spec-value">50 km</span>
+                        </div>
+                        <div class="product-spec">
+                            <span class="spec-label">Motor</span>
+                            <span class="spec-value">1000W</span>
+                        </div>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">R16,500</div>
+                        <div class="compare-checkbox">
+                            <input type="checkbox" id="compare-12">
+                            <label for="compare-12">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Detail View (Hidden by default) -->
+        <div class="product-detail" id="product-detail">
+            <div class="detail-header">
+                <div class="detail-image">
+                    <img src="https://images.unsplash.com/photo-1560917909-28b1d9a6acd8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Product Detail">
+                </div>
+                <div class="detail-info">
+                    <div class="detail-category">Electric Vehicle</div>
+                    <h2 class="detail-title">Tesla Model 3</h2>
+                    <p class="detail-description">The Tesla Model 3 is a mid-size electric sedan that's designed to be the world's best car with exceptional range, performance, safety, and technology. With its minimalist interior, advanced autopilot capabilities, and over-the-air updates, it represents the future of sustainable transportation.</p>
+                    <div class="detail-price">R899,000</div>
+                    <div class="detail-actions">
+                        <button class="btn btn-primary">Contact Seller</button>
+                        <button class="btn btn-outline">Schedule Test Drive</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-specs">
+                <h3>Specifications</h3>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <span class="spec-name">Range</span>
+                        <span class="spec-value">614 km</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Top Speed</span>
+                        <span class="spec-value">225 km/h</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Acceleration (0-100 km/h)</span>
+                        <span class="spec-value">3.3 seconds</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Battery Capacity</span>
+                        <span class="spec-value">75 kWh</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Charging Time</span>
+                        <span class="spec-value">15 min (80%)</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Seating Capacity</span>
+                        <span class="spec-value">5 adults</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Cargo Volume</span>
+                        <span class="spec-value">649 liters</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Warranty</span>
+                        <span class="spec-value">4 years / 80,000 km</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Comparison Bar -->
+    <div class="comparison-bar" id="comparison-bar">
+        <div class="comparison-container">
+            <div class="comparison-items" id="comparison-items">
+                <!-- Comparison items will be added dynamically -->
+            </div>
+            <div class="comparison-actions">
+                <button class="btn btn-outline" id="clear-comparison">Clear All</button>
+                <button class="btn btn-primary" id="compare-btn">Compare (0)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Marketplace</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Electric Vehicles</a>
+                        <a href="#" class="footer-link">Solar Panels</a>
+                        <a href="#" class="footer-link">E-Bikes</a>
+                        <a href="#" class="footer-link">E-Scooters</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Charging Stations</a>
+                        <a href="#" class="footer-link">Savings Calculator</a>
+                        <a href="#" class="footer-link">Learn More</a>
+                        <a href="#" class="footer-link">FAQs</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>For Businesses</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Sell on Marketplace</a>
+                        <a href="#" class="footer-link">Dealer Portal</a>
+                        <a href="#" class="footer-link">Advertising</a>
+                        <a href="#" class="footer-link">Partnerships</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">info@ecmarketplace.co.za</a>
+                        <a href="#" class="footer-link">041 123 4567</a>
+                        <a href="#" class="footer-link">Gqeberha, Eastern Cape</a>
+                        <a href="#" class="footer-link">Support Center</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 EC EV Marketplace. All rights reserved. Supporting the Eastern Cape Automotive Masterplan 2035.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Product data
+        const products = [
+            {
+                id: 1,
+                name: "Tesla Model 3",
+                category: "ev",
+                categoryName: "Electric Vehicle",
+                price: "R899,000",
+                image: "https://images.unsplash.com/photo-1560917909-28b1d9a6acd8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "The Tesla Model 3 is a mid-size electric sedan that's designed to be the world's best car with exceptional range, performance, safety, and technology.",
+                specs: {
+                    "Range": "614 km",
+                    "Top Speed": "225 km/h",
+                    "Acceleration (0-100 km/h)": "3.3 seconds",
+                    "Battery Capacity": "75 kWh",
+                    "Charging Time": "15 min (80%)",
+                    "Seating Capacity": "5 adults",
+                    "Cargo Volume": "649 liters",
+                    "Warranty": "4 years / 80,000 km"
+                }
+            },
+            {
+                id: 2,
+                name: "Residential Solar Kit 5kW",
+                category: "solar",
+                categoryName: "Solar Panel",
+                price: "R125,000",
+                image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Complete home solar system with panels, inverter, and battery storage for energy independence.",
+                specs: {
+                    "Power Output": "5 kW",
+                    "Battery Capacity": "10 kWh",
+                    "Panel Type": "Monocrystalline",
+                    "Inverter Type": "Hybrid",
+                    "Warranty": "10 years",
+                    "Installation": "Included",
+                    "Monitoring": "Mobile App",
+                    "Backup Time": "8-10 hours"
+                }
+            },
+            {
+                id: 3,
+                name: "Urban Commuter E-Bike",
+                category: "ebike",
+                categoryName: "E-Bike",
+                price: "R18,500",
+                image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Lightweight electric bike perfect for city commuting with removable battery and multiple riding modes.",
+                specs: {
+                    "Range": "80 km",
+                    "Top Speed": "25 km/h",
+                    "Motor Power": "250W",
+                    "Battery": "36V 10.4Ah",
+                    "Charging Time": "4-6 hours",
+                    "Frame Material": "Aluminum",
+                    "Weight": "22 kg",
+                    "Warranty": "2 years"
+                }
+            },
+            {
+                id: 4,
+                name: "Foldable E-Scooter Pro",
+                category: "scooter",
+                categoryName: "E-Scooter",
+                price: "R12,999",
+                image: "https://images.unsplash.com/photo-1579621940536-bd98c4679b9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "High-performance electric scooter with dual motors, long range, and advanced suspension system.",
+                specs: {
+                    "Range": "65 km",
+                    "Top Speed": "40 km/h",
+                    "Motor Power": "2 x 350W",
+                    "Battery": "48V 13Ah",
+                    "Charging Time": "6-8 hours",
+                    "Weight": "18 kg",
+                    "Max Load": "120 kg",
+                    "Water Resistance": "IP54"
+                }
+            },
+            {
+                id: 5,
+                name: "Nissan Leaf",
+                category: "ev",
+                categoryName: "Electric Vehicle",
+                price: "R485,000",
+                image: "https://images.unsplash.com/photo-1554224712-d8560f709cbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Affordable electric hatchback with advanced safety features and comfortable interior for everyday driving.",
+                specs: {
+                    "Range": "270 km",
+                    "Top Speed": "144 km/h",
+                    "Acceleration (0-100 km/h)": "7.9 seconds",
+                    "Battery Capacity": "40 kWh",
+                    "Charging Time": "40 min (80%)",
+                    "Seating Capacity": "5 adults",
+                    "Cargo Volume": "435 liters",
+                    "Warranty": "3 years / 100,000 km"
+                }
+            },
+            {
+                id: 6,
+                name: "Commercial Solar System 10kW",
+                category: "solar",
+                categoryName: "Solar Panel",
+                price: "R195,000",
+                image: "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "High-efficiency solar panels designed for businesses with monitoring system and grid-tie capability.",
+                specs: {
+                    "Power Output": "10 kW",
+                    "Panel Count": "25 x 400W",
+                    "Panel Type": "Monocrystalline",
+                    "Inverter Type": "Grid-tie",
+                    "Warranty": "25 years panels",
+                    "Installation": "Included",
+                    "Monitoring": "Web Portal",
+                    "ROI": "4-6 years"
+                }
+            },
+            {
+                id: 7,
+                name: "Mountain E-Bike Pro",
+                category: "ebike",
+                categoryName: "E-Bike",
+                price: "R35,000",
+                image: "https://images.unsplash.com/photo-1532298227914-01b44ea5c976?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Off-road electric bike with full suspension, powerful motor, and durable frame for trail adventures.",
+                specs: {
+                    "Range": "100 km",
+                    "Top Speed": "32 km/h",
+                    "Motor Power": "750W",
+                    "Battery": "48V 14.5Ah",
+                    "Charging Time": "6-8 hours",
+                    "Frame Material": "Aluminum",
+                    "Suspension": "Full suspension",
+                    "Tires": "27.5\" x 2.8\""
+                }
+            },
+            {
+                id: 8,
+                name: "Premium Urban E-Scooter",
+                category: "scooter",
+                categoryName: "E-Scooter",
+                price: "R8,999",
+                image: "https://images.unsplash.com/photo-1593941707882-a523ba98cb10?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Sleek and stylish electric scooter with app connectivity, GPS tracking, and advanced safety features.",
+                specs: {
+                    "Range": "45 km",
+                    "Top Speed": "25 km/h",
+                    "Motor Power": "350W",
+                    "Battery": "36V 10.4Ah",
+                    "Charging Time": "4-5 hours",
+                    "Weight": "14 kg",
+                    "Max Load": "100 kg",
+                    "Connectivity": "Bluetooth App"
+                }
+            },
+            {
+                id: 9,
+                name: "BMW iX3",
+                category: "ev",
+                categoryName: "Electric Vehicle",
+                price: "R1,150,000",
+                image: "https://images.unsplash.com/photo-1555212697-194d092eb3db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Luxury electric SUV with premium interior, advanced driver assistance, and fast charging capability.",
+                specs: {
+                    "Range": "460 km",
+                    "Top Speed": "180 km/h",
+                    "Acceleration (0-100 km/h)": "6.8 seconds",
+                    "Battery Capacity": "74 kWh",
+                    "Charging Time": "34 min (80%)",
+                    "Seating Capacity": "5 adults",
+                    "Cargo Volume": "510 liters",
+                    "Warranty": "4 years / 80,000 km"
+                }
+            },
+            {
+                id: 10,
+                name: "Portable Solar Generator",
+                category: "solar",
+                categoryName: "Solar Panel",
+                price: "R15,999",
+                image: "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Compact solar power station with foldable panels, ideal for camping, outdoor events, and emergency backup.",
+                specs: {
+                    "Power Output": "500W",
+                    "Battery Capacity": "1000Wh",
+                    "Panel Type": "Foldable Monocrystalline",
+                    "Panel Wattage": "100W",
+                    "Warranty": "1 year",
+                    "Ports": "USB, AC, DC",
+                    "Weight": "12 kg",
+                    "Charging Time": "8-10 hours (sun)"
+                }
+            },
+            {
+                id: 11,
+                name: "Cargo E-Bike",
+                category: "ebike",
+                categoryName: "E-Bike",
+                price: "R28,500",
+                image: "https://images.unsplash.com/photo-1571068756277-8b3c16f9d60d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Heavy-duty electric bike with cargo capacity, perfect for deliveries, groceries, and family transportation.",
+                specs: {
+                    "Load Capacity": "150 kg",
+                    "Range": "70 km",
+                    "Top Speed": "25 km/h",
+                    "Motor Power": "500W",
+                    "Battery": "48V 14.5Ah",
+                    "Charging Time": "6-8 hours",
+                    "Frame Material": "Steel",
+                    "Cargo Area": "60 x 40 cm"
+                }
+            },
+            {
+                id: 12,
+                name: "Off-road E-Scooter",
+                category: "scooter",
+                categoryName: "E-Scooter",
+                price: "R16,500",
+                image: "https://images.unsplash.com/photo-1601335589338-9e8e4b5b5aa0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "All-terrain electric scooter with pneumatic tires, powerful motor, and rugged construction for adventure riding.",
+                specs: {
+                    "Range": "50 km",
+                    "Top Speed": "40 km/h",
+                    "Motor Power": "1000W",
+                    "Battery": "48V 12Ah",
+                    "Charging Time": "6-8 hours",
+                    "Weight": "25 kg",
+                    "Max Load": "120 kg",
+                    "Tires": "10\" Pneumatic"
+                }
+            }
+        ];
+
+        // DOM elements
+        const productCards = document.querySelectorAll('.product-card');
+        const categories = document.querySelectorAll('.category');
+        const compareCheckboxes = document.querySelectorAll('.compare-checkbox input');
+        const comparisonBar = document.getElementById('comparison-bar');
+        const comparisonItems = document.getElementById('comparison-items');
+        const compareBtn = document.getElementById('compare-btn');
+        const clearComparisonBtn = document.getElementById('clear-comparison');
+        const productDetail = document.getElementById('product-detail');
+        const searchInput = document.querySelector('.search-input');
+        const filterSelects = document.querySelectorAll('.filter-select');
+        const sortSelect = document.querySelector('.sort-select');
+
+        // State
+        let selectedProducts = new Set();
+        let activeCategory = 'all';
+        let searchTerm = '';
+        let currentFilters = {
+            price: 'all',
+            brand: 'all',
+            location: 'all',
+            condition: 'all'
+        };
+        let currentSort = 'featured';
+
+        // Initialize
+        function init() {
+            // Product card click events
+            productCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.compare-checkbox')) {
+                        const productId = parseInt(card.dataset.id);
+                        showProductDetail(productId);
+                    }
+                });
+            });
+
+            // Category filter events
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    categories.forEach(cat => cat.classList.remove('active'));
+                    category.classList.add('active');
+                    activeCategory = category.dataset.category;
+                    filterProducts();
+                });
+            });
+
+            // Compare checkbox events
+            compareCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const productId = parseInt(e.target.id.split('-')[1]);
+                    if (e.target.checked) {
+                        selectedProducts.add(productId);
+                    } else {
+                        selectedProducts.delete(productId);
+                    }
+                    updateComparisonBar();
+                });
+            });
+
+            // Clear comparison button
+            clearComparisonBtn.addEventListener('click', () => {
+                selectedProducts.clear();
+                compareCheckboxes.forEach(cb => cb.checked = false);
+                updateComparisonBar();
+            });
+
+            // Compare button
+            compareBtn.addEventListener('click', () => {
+                if (selectedProducts.size >= 2) {
+                    // In a real app, this would navigate to a comparison page
+                    alert(`Comparing ${selectedProducts.size} products`);
+                }
+            });
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
+                filterProducts();
+            });
+
+            // Filter events
+            filterSelects.forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const filterType = e.target.previousElementSibling.textContent.toLowerCase().replace(' range', '');
+                    currentFilters[filterType] = e.target.value;
+                    filterProducts();
+                });
+            });
+
+            // Sort functionality
+            sortSelect.addEventListener('change', (e) => {
+                currentSort = e.target.value.split(': ')[1].toLowerCase();
+                sortProducts();
+            });
+        }
+
+        // Show product detail
+        function showProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            // Update detail view
+            productDetail.querySelector('.detail-category').textContent = product.categoryName;
+            productDetail.querySelector('.detail-title').textContent = product.name;
+            productDetail.querySelector('.detail-description').textContent = product.description;
+            productDetail.querySelector('.detail-price').textContent = product.price;
+            productDetail.querySelector('.detail-image img').src = product.image;
+
+            // Update specs
+            const specsGrid = productDetail.querySelector('.specs-grid');
+            specsGrid.innerHTML = '';
+            for (const [key, value] of Object.entries(product.specs)) {
+                const specItem = document.createElement('div');
+                specItem.className = 'spec-item';
+                specItem.innerHTML = `
+                    <span class="spec-name">${key}</span>
+                    <span class="spec-value">${value}</span>
+                `;
+                specsGrid.appendChild(specItem);
+            }
+
+            // Show detail view
+            productDetail.classList.add('active');
+            productDetail.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update comparison bar
+        function updateComparisonBar() {
+            const count = selectedProducts.size;
+            
+            if (count > 0) {
+                comparisonBar.classList.add('active');
+                compareBtn.textContent = `Compare (${count})`;
+                
+                // Update comparison items
+                comparisonItems.innerHTML = '';
+                selectedProducts.forEach(id => {
+                    const product = products.find(p => p.id === id);
+                    if (product) {
+                        const item = document.createElement('div');
+                        item.className = 'comparison-item';
+                        item.innerHTML = `
+                            <img src="${product.image}" alt="${product.name}">
+                            <span>${product.name}</span>
+                        `;
+                        comparisonItems.appendChild(item);
+                    }
+                });
+            } else {
+                comparisonBar.classList.remove('active');
+            }
+        }
+
+        // Filter products
+        function filterProducts() {
+            productCards.forEach(card => {
+                const productId = parseInt(card.dataset.id);
+                const product = products.find(p => p.id === productId);
+                
+                if (!product) return;
+                
+                let show = true;
+                
+                // Category filter
+                if (activeCategory !== 'all' && product.category !== activeCategory) {
+                    show = false;
+                }
+                
+                // Search filter
+                if (searchTerm && !product.name.toLowerCase().includes(searchTerm) && 
+                    !product.description.toLowerCase().includes(searchTerm)) {
+                    show = false;
+                }
+                
+                // Additional filters would be implemented here
+                // This is a simplified version
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+            
+            updateProductCount();
+        }
+
+        // Sort products
+        function sortProducts() {
+            const container = document.querySelector('.products-grid');
+            const cards = Array.from(productCards);
+            
+            cards.sort((a, b) => {
+                const idA = parseInt(a.dataset.id);
+                const idB = parseInt(b.dataset.id);
+                const productA = products.find(p => p.id === idA);
+                const productB = products.find(p => p.id === idB);
+                
+                if (!productA || !productB) return 0;
+                
+                switch (currentSort) {
+                    case 'price (low to high)':
+                        return parseInt(productA.price.replace(/[^\d]/g, '')) - parseInt(productB.price.replace(/[^\d]/g, ''));
+                    case 'price (high to low)':
+                        return parseInt(productB.price.replace(/[^\d]/g, '')) - parseInt(productA.price.replace(/[^\d]/g, ''));
+                    case 'newest first':
+                        return productB.id - productA.id;
+                    case 'most popular':
+                        // In a real app, this would use actual popularity data
+                        return Math.random() - 0.5;
+                    default: // featured
+                        return productA.id - productB.id;
+                }
+            });
+            
+            // Re-append cards in new order
+            cards.forEach(card => container.appendChild(card));
+        }
+
+        // Update product count
+        function updateProductCount() {
+            const visibleCards = Array.from(productCards).filter(card => card.style.display !== 'none');
+            document.querySelector('.products-count').textContent = `Showing ${visibleCards.length} of ${products.length} products`;
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,2794 @@
+<!DOCTYPE html>
+<html lang="en" class="geist_e531dabc-module__QGiZLq__variable geist_mono_68a01160-module__YLcDdW__variable"
+    data-react-source="[project]/src/app/layout.tsx:28:5">
+<head data-react-source="[project]/src/app/layout.tsx:29:7">
+    <meta charSet="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="main.css">
+    <link rel="preload" as="script" fetchPriority="low"
+        href="/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_fd44f5a4._.js" />
+    <script src="/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js" async=""></script>
+    <script src="/_next/static/chunks/node_modules_next_dist_client_8f19e6fb._.js" async=""></script>
+    <script src="/_next/static/chunks/node_modules_next_dist_2ecbf5fa._.js" async=""></script>
+    <script src="/_next/static/chunks/node_modules_%40swc_helpers_cjs_00636ac3._.js" async=""></script>
+    <script src="/_next/static/chunks/_e69f0d32._.js" async=""></script>
+    <script src="/_next/static/chunks/_93808211._.js" async=""></script>
+    <script src="/_next/static/chunks/node_modules_0833f5a9._.js" async=""></script>
+    <script src="/_next/static/chunks/src_app_ClientBody_tsx_a9fb1e66._.js" async=""></script>
+    <script src="/_next/static/chunks/src_app_layout_tsx_c0237562._.js" async=""></script>
+    <script src="/_next/static/chunks/node_modules_c19a515b._.js" async=""></script>
+    <script src="/_next/static/chunks/src_a16ef205._.js" async=""></script>
+    <script src="/_next/static/chunks/src_app_page_tsx_e34ff1f0._.js" async=""></script>
+    <link rel="preload" href="//unpkg.com/same-runtime/dist/index.global.js" as="script" crossorigin="" />
+    <meta name="next-size-adjust" content="" />
+    <title>EC EV Calculator - Advanced Electric Vehicle Savings & Analysis</title>
+    <meta name="description"
+        content="Advanced EV calculator with scenario modeling, risk analysis, and AI-powered insights for Eastern Cape residents and businesses." />
+    <script>document.querySelectorAll('body link[rel="icon"], body link[rel="apple-touch-icon"]').forEach(el => document.head.appendChild(el))</script>
+    <script src="/_next/static/chunks/node_modules_next_dist_build_polyfills_polyfill-nomodule.js" noModule=""></script>
+    <script crossorigin="anonymous" src="https://same.new/inject.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+</head>
+<style>
+    .calculator-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+    
+    @media (max-width: 768px) {
+        .calculator-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .scenario-card {
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .scenario-card:hover {
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .scenario-card.active {
+        border-color: #16a34a;
+        background-color: #f0fdf4;
+    }
+    
+    .slider-container {
+        margin: 16px 0;
+    }
+    
+    .slider-value {
+        display: inline-block;
+        background: #16a34a;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-left: 8px;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin: 20px 0;
+    }
+    
+    .tab-container {
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 20px;
+    }
+    
+    .tab {
+        padding: 12px 24px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .tab.active {
+        color: #16a34a;
+        border-bottom-color: #16a34a;
+    }
+    
+    .tab:hover {
+        color: #16a34a;
+    }
+    
+    .insight-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-left: 4px solid #16a34a;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .risk-meter {
+        height: 24px;
+        background: #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 8px 0;
+    }
+    
+    .risk-meter-fill {
+        height: 100%;
+        border-radius: 12px;
+        transition: width 0.5s ease;
+    }
+    
+    .risk-low {
+        background: #16a34a;
+    }
+    
+    .risk-medium {
+        background: #f59e0b;
+    }
+    
+    .risk-high {
+        background: #ef4444;
+    }
+    
+    .decision-tree-node {
+        display: inline-block;
+        margin: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+    }
+    
+    .decision-tree-node.decision {
+        background: #dbeafe;
+        border-color: #3b82f6;
+    }
+    
+    .decision-tree-node.chance {
+        background: #fef3c7;
+        border-color: #f59e0b;
+    }
+    
+    .decision-tree-node.outcome {
+        background: #dcfce7;
+        border-color: #16a34a;
+    }
+    
+    .simulation-result {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .simulation-result.positive {
+        background: #f0fdf4;
+        border-left: 4px solid #16a34a;
+    }
+    
+    .simulation-result.negative {
+        background: #fef2f2;
+        border-left: 4px solid #ef4444;
+    }
+    
+    .simulation-result.neutral {
+        background: #f0f9ff;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+    }
+    
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 200px;
+        background-color: #1f2937;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 8px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 14px;
+    }
+    
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+    
+    .scenario-builder {
+        background: #f9fafb;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .scenario-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    
+    .step-number {
+        width: 28px;
+        height: 28px;
+        background: #16a34a;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        font-weight: bold;
+    }
+    
+    .step-content {
+        flex: 1;
+    }
+    
+    /* .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    } */
+    
+    /* .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid #16a34a;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    } */
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    
+    .comparison-table th, .comparison-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .comparison-table th {
+        background: #f9fafb;
+        font-weight: 600;
+    }
+    
+    .comparison-table tr:hover {
+        background: #f9fafb;
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        margin-bottom: 16px;
+    }
+    
+    .metric-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #16a34a;
+        margin: 8px 0;
+    }
+    
+    .metric-label {
+        color: #6b7280;
+        font-size: 14px;
+    }
+    
+    .ai-suggestion {
+        background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        border-left: 4px solid #8b5cf6;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+</style>
+<body class="antialiased" data-react-source="[project]/src/app/layout.tsx:35:7">
+    <div class="antialiased" data-react-source="[project]/src/app/ClientBody.tsx:16:10">
+        <div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100"
+            data-react-source="[project]/src/app/page.tsx:9:5">
+            <nav class="bg-white/80 backdrop-blur-sm border-b border-green-200 sticky top-0 z-50"
+                data-react-source="[project]/src/app/page.tsx:11:7">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-react-source="[project]/src/app/page.tsx:12:9">
+                    <div class="flex justify-between items-center h-16"
+                        data-react-source="[project]/src/app/page.tsx:13:11">
+                        <div class="flex items-center space-x-3" data-react-source="[project]/src/app/page.tsx:14:13">
+                            <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"
+                                data-react-source="[project]/src/app/page.tsx:15:15"><span
+                                    class="text-white font-bold text-lg"
+                                    data-react-source="[project]/src/app/page.tsx:16:17">EC</span></div>
+                            <div data-react-source="[project]/src/app/page.tsx:18:15">
+                                <h1 class="text-xl font-bold text-gray-900"
+                                    data-react-source="[project]/src/app/page.tsx:19:17">EC EV Connect</h1>
+                                <p class="text-xs text-green-600" data-react-source="[project]/src/app/page.tsx:20:17">
+                                    Eastern Cape Electric Vehicle Solutions</p>
+                            </div>
+                        </div>
+                        <div class="hidden md:flex items-center space-x-6"
+                            data-react-source="[project]/src/app/page.tsx:23:13">
+                            <a href="index.html"><button
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 text-gray-700 hover:text-green-600"
+                                    data-react-source="[project]/src/components/ui/button.tsx:47:7">Home</button></a>
+                            <a href="solutions.html"><button
+                                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent h-9 px-4 py-2 text-gray-700 hover:text-green-600"
+                                            data-react-source="[project]/src/components/ui/button.tsx:47:7">Core Values</button></a>
+                            <a href="market.html"><button
+                                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent h-9 px-4 py-2 text-gray-700 hover:text-green-600"
+                                            data-react-source="[project]/src/components/ui/button.tsx:47:7">Marketplace</button>
+                                        </a>
+                                        <a href="market.html"><button
+                                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent h-9 px-4 py-2 text-gray-700 hover:text-green-600"
+                                            data-react-source="[project]/src/components/ui/button.tsx:47:7">Youth Portal</button>
+                                        </a>
+                            <a href="learn more/index.html"><button
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent h-9 px-4 py-2 text-gray-700 hover:text-green-600"
+                                    data-react-source="[project]/src/components/ui/button.tsx:47:7">Learn More</button></a><button
+                                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 text-primary-foreground shadow h-9 px-4 py-2 bg-green-600 hover:bg-green-700"
+                                data-react-source="[project]/src/components/ui/button.tsx:47:7">Log/ Register</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent shadow mb-4 bg-green-100 text-green-800 hover:bg-green-200">
+                        Advanced EV Analysis Tool
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Next-Generation <span class="text-green-600">EV Calculator</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                        Our advanced calculator combines scenario modeling, risk analysis, and AI-powered insights to help you make informed decisions about electric vehicle adoption in the Eastern Cape.
+                    </p>
+                </div>
+
+                <div class="tab-container">
+                    <div class="tab active" onclick="switchTab('basic')">Basic Calculator</div>
+                    <div class="tab" onclick="switchTab('scenario')">Scenario Builder</div>
+                    <div class="tab" onclick="switchTab('risk')">Risk Analysis</div>
+                    <div class="tab" onclick="switchTab('ai')">AI Insights</div>
+                    <div class="tab" onclick="switchTab('comparison')">Comparison</div>
+                </div>
+
+                <div id="basic-tab" class="tab-content">
+                    <div class="calculator-container">
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Vehicle & Usage Details</h2>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Current Vehicle Type</label>
+                                <select id="currentVehicle" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="petrol">Petrol Car</option>
+                                    <option value="diesel">Diesel Car</option>
+                                    <option value="hybrid">Hybrid Car</option>
+                                    <option value="suv-petrol">Petrol SUV</option>
+                                    <option value="suv-diesel">Diesel SUV</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Interested EV Type</label>
+                                <select id="evType" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="compact">Compact EV</option>
+                                    <option value="sedan">EV Sedan</option>
+                                    <option value="suv">Electric SUV</option>
+                                    <option value="luxury">Luxury EV</option>
+                                    <option value="commercial">Commercial EV</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Daily Kilometers Driven</label>
+                                <div class="slider-container">
+                                    <input type="range" id="dailyKm" min="10" max="200" value="50" class="w-full" oninput="updateSliderValue('dailyKm')">
+                                    <span id="dailyKm-value" class="slider-value">50 km</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Days Driven Per Month</label>
+                                <div class="slider-container">
+                                    <input type="range" id="daysPerMonth" min="5" max="31" value="22" class="w-full" oninput="updateSliderValue('daysPerMonth')">
+                                    <span id="daysPerMonth-value" class="slider-value">22 days</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Current Fuel Cost (R/liter)</label>
+                                <div class="slider-container">
+                                    <input type="range" id="fuelCost" min="15" max="30" value="22" step="0.5" class="w-full" oninput="updateSliderValue('fuelCost')">
+                                    <span id="fuelCost-value" class="slider-value">R22.00</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Electricity Cost (R/kWh)</label>
+                                <div class="slider-container">
+                                    <input type="range" id="electricityCost" min="1" max="3" value="1.8" step="0.1" class="w-full" oninput="updateSliderValue('electricityCost')">
+                                    <span id="electricityCost-value" class="slider-value">R1.80</span>
+                                </div>
+                            </div>
+                            
+                            <button onclick="calculateBasic()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition duration-300">
+                                Calculate Savings
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Results</h2>
+                            
+                            <div id="basicResults" class="hidden">
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Monthly Fuel Savings</div>
+                                        <div id="monthlySavings" class="metric-value">R0</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Annual Fuel Savings</div>
+                                        <div id="annualSavings" class="metric-value">R0</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">CO₂ Reduction</div>
+                                        <div id="co2Reduction" class="metric-value">0 kg</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Break-even Period</div>
+                                        <div id="breakEven" class="metric-value">0 years</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-container">
+                                    <canvas id="savingsChart"></canvas>
+                                </div>
+                                
+                                <div class="mt-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Environmental Impact</h3>
+                                    <div class="bg-green-50 rounded-lg p-4">
+                                        <div class="flex items-center mb-2">
+                                            <span class="text-green-600 mr-2">🌱</span>
+                                            <span class="text-gray-700">Your switch to electric would save approximately <span id="treesEquivalent" class="font-semibold">0</span> trees worth of CO₂ annually.</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-green-600 mr-2">🏭</span>
+                                            <span class="text-gray-700">Equivalent to removing <span id="carsEquivalent" class="font-semibold">0</span> petrol cars from the road for a year.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="basicPlaceholder" class="text-center py-12">
+                                <div class="text-gray-400 mb-4">📊</div>
+                                <p class="text-gray-500">Enter your details and click "Calculate Savings" to see your results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="scenario-tab" class="tab-content hidden">
+                    <div class="scenario-builder">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Scenario Builder</h2>
+                        <p class="text-gray-600 mb-6">Build complex scenarios with multiple decision points to understand the long-term implications of your EV transition.</p>
+                        
+                        <div class="scenario-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3 class="font-semibold text-gray-900">Initial Decision</h3>
+                                <p class="text-gray-600">Choose your primary EV adoption strategy</p>
+                                <div class="mt-2">
+                                    <label class="inline-flex items-center mr-6">
+                                        <input type="radio" name="initialDecision" value="buy" class="form-radio text-green-600" checked>
+                                        <span class="ml-2">Buy New EV</span>
+                                    </label>
+                                    <label class="inline-flex items-center mr-6">
+                                        <input type="radio" name="initialDecision" value="lease" class="form-radio text-green-600">
+                                        <span class="ml-2">Lease EV</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="initialDecision" value="hybrid" class="form-radio text-green-600">
+                                        <span class="ml-2">Start with Hybrid</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3 class="font-semibold text-gray-900">Charging Infrastructure</h3>
+                                <p class="text-gray-600">Select your home and workplace charging options</p>
+                                <div class="mt-2 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Home Charging</label>
+                                        <select id="homeCharging" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                            <option value="none">No Charging</option>
+                                            <option value="standard">Standard Outlet (Slow)</option>
+                                            <option value="level2">Level 2 Charger</option>
+                                            <option value="dcfast">DC Fast Charger</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Workplace Charging</label>
+                                        <select id="workCharging" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                            <option value="none">Not Available</option>
+                                            <option value="limited">Limited Access</option>
+                                            <option value="free">Free Charging</option>
+                                            <option value="paid">Paid Charging</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3 class="font-semibold text-gray-900">Time Horizon</h3>
+                                <p class="text-gray-600">Select the analysis period for your scenario</p>
+                                <div class="mt-2">
+                                    <div class="slider-container">
+                                        <input type="range" id="timeHorizon" min="1" max="10" value="5" class="w-full" oninput="updateSliderValue('timeHorizon')">
+                                        <span id="timeHorizon-value" class="slider-value">5 years</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3 class="font-semibold text-gray-900">Future Factors</h3>
+                                <p class="text-gray-600">Adjust for expected changes in fuel prices, electricity costs, and battery technology</p>
+                                <div class="mt-2 grid grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Fuel Price Change</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="fuelPriceChange" min="-5" max="15" value="5" step="1" class="w-full" oninput="updateSliderValue('fuelPriceChange')">
+                                            <span id="fuelPriceChange-value" class="slider-value">+5%</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Electricity Price Change</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="electricityPriceChange" min="-2" max="10" value="3" step="0.5" class="w-full" oninput="updateSliderValue('electricityPriceChange')">
+                                            <span id="electricityPriceChange-value" class="slider-value">+3%</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Battery Improvement</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="batteryImprovement" min="0" max="30" value="10" step="1" class="w-full" oninput="updateSliderValue('batteryImprovement')">
+                                            <span id="batteryImprovement-value" class="slider-value">+10%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="buildScenario()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition duration-300">
+                            Build Scenario
+                        </button>
+                    </div>
+                    
+                    <div id="scenarioResults" class="hidden">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Decision Tree Analysis</h3>
+                        <div class="bg-white rounded-xl shadow p-6 mb-6">
+                            <div id="decisionTree" class="mb-6">
+                                <!-- Decision tree will be generated here -->
+                            </div>
+                            
+                            <div class="chart-container">
+                                <canvas id="scenarioChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="scenario-card">
+                                <h3 class="font-semibold text-gray-900 mb-2">Optimal Path</h3>
+                                <p id="optimalPath" class="text-gray-600 mb-4">Based on your inputs, the optimal path is:</p>
+                                <div class="metric-value text-green-600" id="optimalSavings">R0</div>
+                                <div class="metric-label">Total Savings Over 5 Years</div>
+                            </div>
+                            
+                            <div class="scenario-card">
+                                <h3 class="font-semibold text-gray-900 mb-2">Risk Assessment</h3>
+                                <p class="text-gray-600 mb-4">Overall risk level of this scenario:</p>
+                                <div class="risk-meter">
+                                    <div id="scenarioRiskMeter" class="risk-meter-fill risk-medium" style="width: 50%"></div>
+                                </div>
+                                <div id="scenarioRiskText" class="text-sm font-medium text-yellow-600">Medium Risk</div>
+                            </div>
+                            
+                            <div class="scenario-card">
+                                <h3 class="font-semibold text-gray-900 mb-2">Flexibility Score</h3>
+                                <p class="text-gray-600 mb-4">How adaptable this scenario is to changing conditions:</p>
+                                <div class="flex items-center">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div id="flexibilityScore" class="bg-green-600 h-2.5 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                    <span class="ml-2 text-sm font-medium text-gray-700">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="risk-tab" class="tab-content hidden">
+                    <div class="calculator-container">
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Risk Analysis Parameters</h2>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Risk Tolerance</label>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="scenario-card cursor-pointer" onclick="selectRiskTolerance('low')">
+                                        <h3 class="font-semibold text-gray-900">Low</h3>
+                                        <p class="text-sm text-gray-600">Prefer predictable outcomes</p>
+                                    </div>
+                                    <div class="scenario-card active cursor-pointer" onclick="selectRiskTolerance('medium')">
+                                        <h3 class="font-semibold text-gray-900">Medium</h3>
+                                        <p class="text-sm text-gray-600">Balanced approach</p>
+                                    </div>
+                                    <div class="scenario-card cursor-pointer" onclick="selectRiskTolerance('high')">
+                                        <h3 class="font-semibold text-gray-900">High</h3>
+                                        <p class="text-sm text-gray-600">Willing to take chances</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Investment Time Horizon</label>
+                                <div class="slider-container">
+                                    <input type="range" id="investmentHorizon" min="1" max="10" value="5" class="w-full" oninput="updateSliderValue('investmentHorizon')">
+                                    <span id="investmentHorizon-value" class="slider-value">5 years</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Budget Flexibility</label>
+                                <div class="slider-container">
+                                    <input type="range" id="budgetFlexibility" min="0" max="100" value="30" class="w-full" oninput="updateSliderValue('budgetFlexibility')">
+                                    <span id="budgetFlexibility-value" class="slider-value">30%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Uncertainty Factors</label>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="fuelPriceVolatility" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="fuelPriceVolatility" class="ml-2 block text-sm text-gray-700">Fuel Price Volatility</label>
+                                        <div class="tooltip ml-2">
+                                            <span class="text-gray-400">ⓘ</span>
+                                            <span class="tooltiptext">Consider potential fluctuations in fuel prices</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="batteryDegradation" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="batteryDegradation" class="ml-2 block text-sm text-gray-700">Battery Degradation</label>
+                                        <div class="tooltip ml-2">
+                                            <span class="text-gray-400">ⓘ</span>
+                                            <span class="tooltiptext">Account for potential battery capacity loss over time</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="resaleValue" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="resaleValue" class="ml-2 block text-sm text-gray-700">Resale Value Uncertainty</label>
+                                        <div class="tooltip ml-2">
+                                            <span class="text-gray-400">ⓘ</span>
+                                            <span class="tooltiptext">Consider variability in future EV resale values</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="policyChanges" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="policyChanges" class="ml-2 block text-sm text-gray-700">Policy Changes</label>
+                                        <div class="tooltip ml-2">
+                                            <span class="text-gray-400">ⓘ</span>
+                                            <span class="tooltiptext">Account for potential changes in government incentives</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="runMonteCarlo()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition duration-300">
+                                Run Monte Carlo Simulation
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Risk Analysis Results</h2>
+                            
+                            <div id="riskResults" class="hidden">
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Expected Value (EV)</div>
+                                        <div id="expectedValue" class="metric-value">R0</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Standard Deviation</div>
+                                        <div id="standardDeviation" class="metric-value">R0</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Value at Risk (95%)</div>
+                                        <div id="valueAtRisk" class="metric-value">R0</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-label">Probability of Loss</div>
+                                        <div id="probabilityOfLoss" class="metric-value">0%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-container mb-6">
+                                    <canvas id="riskDistributionChart"></canvas>
+                                </div>
+                                
+                                <div class="chart-container mb-6">
+                                    <canvas id="tornadoChart"></canvas>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Simulation Outcomes</h3>
+                                    <div id="simulationOutcomes">
+                                        <!-- Simulation outcomes will be generated here -->
+                                    </div>
+                                </div>
+                                
+                                <div class="insight-card">
+                                    <h3 class="font-semibold text-gray-900 mb-2">Risk Mitigation Strategies</h3>
+                                    <ul id="riskMitigation" class="list-disc pl-5 text-gray-600">
+                                        <!-- Risk mitigation strategies will be generated here -->
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div id="riskPlaceholder" class="text-center py-12">
+                                <div class="text-gray-400 mb-4">🎲</div>
+                                <p class="text-gray-500">Configure your risk parameters and run the Monte Carlo simulation to see the results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ai-tab" class="tab-content hidden">
+                    <div class="calculator-container">
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">AI-Powered Analysis</h2>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Analysis Type</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="scenario-card active cursor-pointer" onclick="selectAnalysisType('savings')">
+                                        <h3 class="font-semibold text-gray-900">Savings Optimization</h3>
+                                        <p class="text-sm text-gray-600">Find the optimal EV for maximum savings</p>
+                                    </div>
+                                    <div class="scenario-card cursor-pointer" onclick="selectAnalysisType('environmental')">
+                                        <h3 class="font-semibold text-gray-900">Environmental Impact</h3>
+                                        <p class="text-sm text-gray-600">Minimize your carbon footprint</p>
+                                    </div>
+                                    <div class="scenario-card cursor-pointer" onclick="selectAnalysisType('totalCost')">
+                                        <h3 class="font-semibold text-gray-900">Total Cost of Ownership</h3>
+                                        <p class="text-sm text-gray-600">Analyze lifetime costs</p>
+                                    </div>
+                                    <div class="scenario-card cursor-pointer" onclick="selectAnalysisType('charging')">
+                                        <h3 class="font-semibold text-gray-900">Charging Optimization</h3>
+                                        <p class="text-sm text-gray-600">Optimize your charging strategy</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Additional Preferences</label>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="preferLocal" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="preferLocal" class="ml-2 block text-sm text-gray-700">Prefer locally manufactured vehicles</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="considerIncentives" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="considerIncentives" class="ml-2 block text-sm text-gray-700">Consider government incentives</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="includeResale" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                        <label for="includeResale" class="ml-2 block text-sm text-gray-700">Include resale value projections</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Budget Range</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Minimum (R)</label>
+                                        <input type="number" id="minBudget" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500" value="200000">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Maximum (R)</label>
+                                        <input type="number" id="maxBudget" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500" value="800000">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="runAIAnalysis()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition duration-300">
+                                Run AI Analysis
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">AI Recommendations</h2>
+                            
+                            <div id="aiResults" class="hidden">
+                                <div class="ai-suggestion mb-6">
+                                    <h3 class="font-semibold text-gray-900 mb-2">Top Recommendation</h3>
+                                    <div id="topRecommendation" class="text-gray-700">
+                                        <!-- Top recommendation will be generated here -->
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Personalized Insights</h3>
+                                    <div id="personalizedInsights">
+                                        <!-- Personalized insights will be generated here -->
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-container mb-6">
+                                    <canvas id="aiComparisonChart"></canvas>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Alternative Options</h3>
+                                    <div id="alternativeOptions" class="space-y-4">
+                                        <!-- Alternative options will be generated here -->
+                                    </div>
+                                </div>
+                                
+                                <div class="insight-card">
+                                    <h3 class="font-semibold text-gray-900 mb-2">Implementation Strategy</h3>
+                                    <div id="implementationStrategy" class="text-gray-700">
+                                        <!-- Implementation strategy will be generated here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="aiPlaceholder" class="text-center py-12">
+                                <div class="text-gray-400 mb-4">🤖</div>
+                                <p class="text-gray-500">Configure your analysis preferences and run the AI analysis to get personalized recommendations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comparison-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-xl shadow p-6 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">EV Comparison Tool</h2>
+                        <p class="text-gray-600 mb-6">Compare multiple electric vehicles side by side to find the best option for your needs.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle 1</label>
+                                <select id="vehicle1" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="">Select a vehicle</option>
+                                    <option value="bmw-i3">BMW i3</option>
+                                    <option value="nissan-leaf">Nissan Leaf</option>
+                                    <option value="tesla-model3">Tesla Model 3</option>
+                                    <option value="volvo-xc40">Volvo XC40 Recharge</option>
+                                    <option value="mini-cooper-se">Mini Cooper SE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle 2</label>
+                                <select id="vehicle2" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="">Select a vehicle</option>
+                                    <option value="bmw-i3">BMW i3</option>
+                                    <option value="nissan-leaf">Nissan Leaf</option>
+                                    <option value="tesla-model3">Tesla Model 3</option>
+                                    <option value="volvo-xc40">Volvo XC40 Recharge</option>
+                                    <option value="mini-cooper-se">Mini Cooper SE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle 3</label>
+                                <select id="vehicle3" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="">Select a vehicle</option>
+                                    <option value="bmw-i3">BMW i3</option>
+                                    <option value="nissan-leaf">Nissan Leaf</option>
+                                    <option value="tesla-model3">Tesla Model 3</option>
+                                    <option value="volvo-xc40">Volvo XC40 Recharge</option>
+                                    <option value="mini-cooper-se">Mini Cooper SE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle 4</label>
+                                <select id="vehicle4" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="">Select a vehicle</option>
+                                    <option value="bmw-i3">BMW i3</option>
+                                    <option value="nissan-leaf">Nissan Leaf</option>
+                                    <option value="tesla-model3">Tesla Model 3</option>
+                                    <option value="volvo-xc40">Volvo XC40 Recharge</option>
+                                    <option value="mini-cooper-se">Mini Cooper SE</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Comparison Criteria</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="comparePrice" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" checked>
+                                    <label for="comparePrice" class="ml-2 block text-sm text-gray-700">Price</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareRange" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" checked>
+                                    <label for="compareRange" class="ml-2 block text-sm text-gray-700">Range</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareCharging" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" checked>
+                                    <label for="compareCharging" class="ml-2 block text-sm text-gray-700">Charging Time</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareEfficiency" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" checked>
+                                    <label for="compareEfficiency" class="ml-2 block text-sm text-gray-700">Efficiency</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareFeatures" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="compareFeatures" class="ml-2 block text-sm text-gray-700">Features</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareWarranty" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="compareWarranty" class="ml-2 block text-sm text-gray-700">Warranty</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareService" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="compareService" class="ml-2 block text-sm text-gray-700">Service Network</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compareResale" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="compareResale" class="ml-2 block text-sm text-gray-700">Resale Value</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="compareVehicles()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition duration-300">
+                            Compare Vehicles
+                        </button>
+                    </div>
+                    
+                    <div id="comparisonResults" class="hidden bg-white rounded-xl shadow p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Comparison Results</h3>
+                        
+                        <div class="overflow-x-auto mb-6">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Attribute</th>
+                                        <th id="v1Header">Vehicle 1</th>
+                                        <th id="v2Header">Vehicle 2</th>
+                                        <th id="v3Header">Vehicle 3</th>
+                                        <th id="v4Header">Vehicle 4</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparisonTableBody">
+                                    <!-- Comparison table rows will be generated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="chart-container mb-6">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="scenario-card">
+                                <h3 class="font-semibold text-gray-900 mb-2">Best Value</h3>
+                                <p id="bestValue" class="text-gray-600 mb-4">Based on the selected criteria, the best value option is:</p>
+                                <div class="text-lg font-semibold text-green-600" id="bestValueVehicle">-</div>
+                            </div>
+                            
+                            <div class="scenario-card">
+                                <h3 class="font-semibold text-gray-900 mb-2">Best Performance</h3>
+                                <p id="bestPerformance" class="text-gray-600 mb-4">Based on the selected criteria, the best performance option is:</p>
+                                <div class="text-lg font-semibold text-green-600" id="bestPerformanceVehicle">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="bg-gray-900 text-white py-12" data-react-source="[project]/src/app/page.tsx:206:7">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                    data-react-source="[project]/src/app/page.tsx:207:9">
+                    <div class="grid md:grid-cols-4 gap-8" data-react-source="[project]/src/app/page.tsx:208:11">
+                        <div data-react-source="[project]/src/app/page.tsx:209:13">
+                            <div class="flex items-center space-x-3 mb-4"
+                                data-react-source="[project]/src/app/page.tsx:210:15">
+                                <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"
+                                    data-react-source="[project]/src/app/page.tsx:211:17"><span
+                                        class="text-white font-bold text-lg"
+                                        data-react-source="[project]/src/app/page.tsx:212:19">EC</span></div><span
+                                    class="text-xl font-bold" data-react-source="[project]/src/app/page.tsx:214:17">EC
+                                    EV Toolkit</span>
+                            </div>
+                            <p class="text-gray-400 text-sm" data-react-source="[project]/src/app/page.tsx:216:15">
+                                Supporting the Eastern Cape Automotive Masterplan 2035 through innovative EV solutions.
+                            </p>
+                        </div>
+                        <div data-react-source="[project]/src/app/page.tsx:220:13">
+                            <h3 class="font-semibold mb-4" data-react-source="[project]/src/app/page.tsx:221:15">
+                                Features</h3>
+                            <ul class="text-gray-400 text-sm space-y-2"
+                                data-react-source="[project]/src/app/page.tsx:222:15">
+                                <li data-react-source="[project]/src/app/page.tsx:223:17">Charging Station Locator</li>
+                                <li data-react-source="[project]/src/app/page.tsx:224:17">Advanced EV Calculator</li>
+                                <li data-react-source="[project]/src/app/page.tsx:225:17">Educational Resources</li>
+                                <li data-react-source="[project]/src/app/page.tsx:226:17">Route Planning</li>
+                            </ul>
+                        </div>
+                        <div data-react-source="[project]/src/app/page.tsx:229:13">
+                            <h3 class="font-semibold mb-4" data-react-source="[project]/src/app/page.tsx:230:15">Support
+                            </h3>
+                            <ul class="text-gray-400 text-sm space-y-2"
+                                data-react-source="[project]/src/app/page.tsx:231:15">
+                                <li data-react-source="[project]/src/app/page.tsx:232:17">Help Center</li>
+                                <li data-react-source="[project]/src/app/page.tsx:233:17">Contact Us</li>
+                                <li data-react-source="[project]/src/app/page.tsx:234:17">Documentation</li>
+                                <li data-react-source="[project]/src/app/page.tsx:235:17">Community</li>
+                            </ul>
+                        </div>
+                        <div data-react-source="[project]/src/app/page.tsx:238:13">
+                            <h3 class="font-semibold mb-4" data-react-source="[project]/src/app/page.tsx:239:15">Connect
+                            </h3>
+                            <ul class="text-gray-400 text-sm space-y-2"
+                                data-react-source="[project]/src/app/page.tsx:240:15">
+                                <li data-react-source="[project]/src/app/page.tsx:241:17">Government Portal</li>
+                                <li data-react-source="[project]/src/app/page.tsx:242:17">Industry Partners</li>
+                                <li data-react-source="[project]/src/app/page.tsx:243:17">Research Initiatives</li>
+                                <li data-react-source="[project]/src/app/page.tsx:244:17">News &amp; Updates</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div data-orientation="horizontal" role="none" class="shrink-0 h-[1px] w-full my-8 bg-gray-700"
+                        data-react-source="[project]/src/components/ui/separator.tsx:16:5"></div>
+                    <div class="text-center text-gray-400 text-sm"
+                        data-react-source="[project]/src/app/page.tsx:249:11">
+                        <p data-react-source="[project]/src/app/page.tsx:250:13">© 2025 EC EV Toolkit. Built for the
+                            Eastern Cape Automotive Masterplan 2035.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Vehicle data
+        const vehicleData = {
+            'bmw-i3': {
+                name: 'BMW i3',
+                price: 650000,
+                range: 260,
+                chargingTime: 4.5,
+                efficiency: 13.1,
+                features: 8,
+                warranty: 8,
+                service: 7,
+                resale: 6
+            },
+            'nissan-leaf': {
+                name: 'Nissan Leaf',
+                price: 520000,
+                range: 270,
+                chargingTime: 7.5,
+                efficiency: 14.5,
+                features: 7,
+                warranty: 8,
+                service: 8,
+                resale: 5
+            },
+            'tesla-model3': {
+                name: 'Tesla Model 3',
+                price: 850000,
+                range: 491,
+                chargingTime: 0.33,
+                efficiency: 14.2,
+                features: 10,
+                warranty: 8,
+                service: 9,
+                resale: 9
+            },
+            'volvo-xc40': {
+                name: 'Volvo XC40 Recharge',
+                price: 950000,
+                range: 418,
+                chargingTime: 0.67,
+                efficiency: 18.8,
+                features: 9,
+                warranty: 8,
+                service: 8,
+                resale: 7
+            },
+            'mini-cooper-se': {
+                name: 'Mini Cooper SE',
+                price: 580000,
+                range: 203,
+                chargingTime: 2.5,
+                efficiency: 14.3,
+                features: 8,
+                warranty: 8,
+                service: 7,
+                resale: 6
+            }
+        };
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+        }
+
+        // Update slider value display
+        function updateSliderValue(sliderId) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(`${sliderId}-value`);
+            let value = slider.value;
+            
+            switch(sliderId) {
+                case 'dailyKm':
+                    valueDisplay.textContent = `${value} km`;
+                    break;
+                case 'daysPerMonth':
+                    valueDisplay.textContent = `${value} days`;
+                    break;
+                case 'fuelCost':
+                    valueDisplay.textContent = `R${parseFloat(value).toFixed(2)}`;
+                    break;
+                case 'electricityCost':
+                    valueDisplay.textContent = `R${parseFloat(value).toFixed(2)}`;
+                    break;
+                case 'timeHorizon':
+                    valueDisplay.textContent = `${value} years`;
+                    break;
+                case 'fuelPriceChange':
+                    valueDisplay.textContent = `${value > 0 ? '+' : ''}${value}%`;
+                    break;
+                case 'electricityPriceChange':
+                    valueDisplay.textContent = `${value > 0 ? '+' : ''}${value}%`;
+                    break;
+                case 'batteryImprovement':
+                    valueDisplay.textContent = `+${value}%`;
+                    break;
+                case 'investmentHorizon':
+                    valueDisplay.textContent = `${value} years`;
+                    break;
+                case 'budgetFlexibility':
+                    valueDisplay.textContent = `${value}%`;
+                    break;
+            }
+        }
+
+        // Basic calculator
+        function calculateBasic() {
+            const currentVehicle = document.getElementById('currentVehicle').value;
+            const evType = document.getElementById('evType').value;
+            const dailyKm = parseInt(document.getElementById('dailyKm').value);
+            const daysPerMonth = parseInt(document.getElementById('daysPerMonth').value);
+            const fuelCost = parseFloat(document.getElementById('fuelCost').value);
+            const electricityCost = parseFloat(document.getElementById('electricityCost').value);
+            
+            // Calculate monthly and annual distance
+            const monthlyKm = dailyKm * daysPerMonth;
+            const annualKm = monthlyKm * 12;
+            
+            // Fuel consumption rates (L/100km)
+            const fuelConsumption = {
+                'petrol': 8.0,
+                'diesel': 6.5,
+                'hybrid': 4.5,
+                'suv-petrol': 10.5,
+                'suv-diesel': 8.5
+            };
+            
+            // EV efficiency rates (kWh/100km)
+            const evEfficiency = {
+                'compact': 14.0,
+                'sedan': 16.0,
+                'suv': 20.0,
+                'luxury': 18.0,
+                'commercial': 22.0
+            };
+            
+            // Calculate current fuel costs
+            const monthlyFuelCost = (monthlyKm / 100) * fuelConsumption[currentVehicle] * fuelCost;
+            const annualFuelCost = monthlyFuelCost * 12;
+            
+            // Calculate EV electricity costs
+            const monthlyElectricityCost = (monthlyKm / 100) * evEfficiency[evType] * electricityCost;
+            const annualElectricityCost = monthlyElectricityCost * 12;
+            
+            // Calculate savings
+            const monthlySavings = monthlyFuelCost - monthlyElectricityCost;
+            const annualSavings = annualFuelCost - annualElectricityCost;
+            
+            // Calculate CO2 reduction (kg CO2 per year)
+            const co2Emissions = {
+                'petrol': 2.31,
+                'diesel': 2.68,
+                'hybrid': 1.45,
+                'suv-petrol': 2.85,
+                'suv-diesel': 3.12
+            };
+            
+            const annualCo2Reduction = (annualKm / 100) * co2Emissions[currentVehicle];
+            
+            // Calculate break-even period (assuming EV price premium of R150,000)
+            const evPricePremium = 150000;
+            const breakEvenYears = evPricePremium / annualSavings;
+            
+            // Calculate environmental equivalents
+            const treesEquivalent = Math.round(annualCo2Reduction / 22); // 1 tree absorbs ~22kg CO2 per year
+            const carsEquivalent = (annualCo2Reduction / 4500).toFixed(1); // Average car emits ~4500kg CO2 per year
+            
+            // Update UI
+            document.getElementById('monthlySavings').textContent = `R${monthlySavings.toFixed(0)}`;
+            document.getElementById('annualSavings').textContent = `R${annualSavings.toFixed(0)}`;
+            document.getElementById('co2Reduction').textContent = `${annualCo2Reduction.toFixed(0)} kg`;
+            document.getElementById('breakEven').textContent = `${breakEvenYears.toFixed(1)} years`;
+            document.getElementById('treesEquivalent').textContent = treesEquivalent;
+            document.getElementById('carsEquivalent').textContent = carsEquivalent;
+            
+            // Show results
+            document.getElementById('basicResults').classList.remove('hidden');
+            document.getElementById('basicPlaceholder').classList.add('hidden');
+            
+            // Create savings chart
+            createSavingsChart(annualSavings, breakEvenYears);
+        }
+
+        // Create savings chart
+        function createSavingsChart(annualSavings, breakEvenYears) {
+            const ctx = document.getElementById('savingsChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.savingsChartInstance) {
+                window.savingsChartInstance.destroy();
+            }
+            
+            // Generate data for 10 years
+            const years = [];
+            const cumulativeSavings = [];
+            const evPricePremium = 150000;
+            
+            for (let i = 1; i <= 10; i++) {
+                years.push(`Year ${i}`);
+                cumulativeSavings.push((annualSavings * i) - evPricePremium);
+            }
+            
+            window.savingsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Cumulative Savings (R)',
+                        data: cumulativeSavings,
+                        backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                        borderColor: 'rgba(22, 163, 74, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(22, 163, 74, 1)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Amount (R)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `R${context.raw.toFixed(0)}`;
+                                }
+                            }
+                        },
+                        annotation: {
+                            annotations: {
+                                breakEvenLine: {
+                                    type: 'line',
+                                    yMin: 0,
+                                    yMax: 0,
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    label: {
+                                        content: `Break-even: ${breakEvenYears.toFixed(1)} years`,
+                                        enabled: true,
+                                        position: 'end'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Scenario builder
+        function buildScenario() {
+            const initialDecision = document.querySelector('input[name="initialDecision"]:checked').value;
+            const homeCharging = document.getElementById('homeCharging').value;
+            const workCharging = document.getElementById('workCharging').value;
+            const timeHorizon = parseInt(document.getElementById('timeHorizon').value);
+            const fuelPriceChange = parseFloat(document.getElementById('fuelPriceChange').value);
+            const electricityPriceChange = parseFloat(document.getElementById('electricityPriceChange').value);
+            const batteryImprovement = parseFloat(document.getElementById('batteryImprovement').value);
+            
+            // Show loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Generate decision tree
+                generateDecisionTree(initialDecision, homeCharging, workCharging);
+                
+                // Calculate scenario results
+                const scenarioResults = calculateScenarioResults(
+                    initialDecision, homeCharging, workCharging, timeHorizon,
+                    fuelPriceChange, electricityPriceChange, batteryImprovement
+                );
+                
+                // Update UI
+                document.getElementById('optimalPath').textContent = scenarioResults.optimalPath;
+                document.getElementById('optimalSavings').textContent = `R${scenarioResults.totalSavings.toFixed(0)}`;
+                
+                // Update risk meter
+                const riskMeter = document.getElementById('scenarioRiskMeter');
+                const riskText = document.getElementById('scenarioRiskText');
+                
+                riskMeter.style.width = `${scenarioResults.riskLevel * 100}%`;
+                
+                if (scenarioResults.riskLevel < 0.33) {
+                    riskMeter.className = 'risk-meter-fill risk-low';
+                    riskText.textContent = 'Low Risk';
+                    riskText.className = 'text-sm font-medium text-green-600';
+                } else if (scenarioResults.riskLevel < 0.66) {
+                    riskMeter.className = 'risk-meter-fill risk-medium';
+                    riskText.textContent = 'Medium Risk';
+                    riskText.className = 'text-sm font-medium text-yellow-600';
+                } else {
+                    riskMeter.className = 'risk-meter-fill risk-high';
+                    riskText.textContent = 'High Risk';
+                    riskText.className = 'text-sm font-medium text-red-600';
+                }
+                
+                // Update flexibility score
+                document.getElementById('flexibilityScore').style.width = `${scenarioResults.flexibilityScore * 100}%`;
+                
+                // Create scenario chart
+                createScenarioChart(scenarioResults.yearlyData);
+                
+                // Show results
+                document.getElementById('scenarioResults').classList.remove('hidden');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1500);
+        }
+
+        // Generate decision tree visualization
+        function generateDecisionTree(initialDecision, homeCharging, workCharging) {
+            const decisionTree = document.getElementById('decisionTree');
+            decisionTree.innerHTML = '';
+            
+            // Create decision tree nodes
+            const initialNode = document.createElement('div');
+            initialNode.className = 'decision-tree-node decision';
+            initialNode.textContent = 'Initial Decision';
+            decisionTree.appendChild(initialNode);
+            
+            const decisionOptions = document.createElement('div');
+            decisionOptions.className = 'ml-8';
+            
+            const buyOption = document.createElement('div');
+            buyOption.className = `decision-tree-node chance ${initialDecision === 'buy' ? 'active' : ''}`;
+            buyOption.textContent = 'Buy New EV';
+            decisionOptions.appendChild(buyOption);
+            
+            const leaseOption = document.createElement('div');
+            leaseOption.className = `decision-tree-node chance ${initialDecision === 'lease' ? 'active' : ''}`;
+            leaseOption.textContent = 'Lease EV';
+            decisionOptions.appendChild(leaseOption);
+            
+            const hybridOption = document.createElement('div');
+            hybridOption.className = `decision-tree-node chance ${initialDecision === 'hybrid' ? 'active' : ''}`;
+            hybridOption.textContent = 'Start with Hybrid';
+            decisionOptions.appendChild(hybridOption);
+            
+            decisionTree.appendChild(decisionOptions);
+            
+            // Add charging infrastructure nodes
+            const chargingNode = document.createElement('div');
+            chargingNode.className = 'decision-tree-node decision ml-8';
+            chargingNode.textContent = 'Charging Infrastructure';
+            decisionTree.appendChild(chargingNode);
+            
+            const chargingOptions = document.createElement('div');
+            chargingOptions.className = 'ml-16';
+            
+            const homeChargingOption = document.createElement('div');
+            homeChargingOption.className = 'decision-tree-node chance';
+            homeChargingOption.textContent = `Home: ${getChargingLabel(homeCharging)}`;
+            chargingOptions.appendChild(homeChargingOption);
+            
+            const workChargingOption = document.createElement('div');
+            workChargingOption.className = 'decision-tree-node chance';
+            workChargingOption.textContent = `Work: ${getChargingLabel(workCharging)}`;
+            chargingOptions.appendChild(workChargingOption);
+            
+            decisionTree.appendChild(chargingOptions);
+            
+            // Add outcome nodes
+            const outcomeNode = document.createElement('div');
+            outcomeNode.className = 'decision-tree-node decision ml-8';
+            outcomeNode.textContent = 'Outcome';
+            decisionTree.appendChild(outcomeNode);
+            
+            const outcomeOptions = document.createElement('div');
+            outcomeOptions.className = 'ml-16';
+            
+            const savingsOutcome = document.createElement('div');
+            savingsOutcome.className = 'decision-tree-node outcome';
+            savingsOutcome.textContent = 'Cost Savings';
+            outcomeOptions.appendChild(savingsOutcome);
+            
+            const environmentalOutcome = document.createElement('div');
+            environmentalOutcome.className = 'decision-tree-node outcome';
+            environmentalOutcome.textContent = 'Environmental Benefits';
+            outcomeOptions.appendChild(environmentalOutcome);
+            
+            const convenienceOutcome = document.createElement('div');
+            convenienceOutcome.className = 'decision-tree-node outcome';
+            convenienceOutcome.textContent = 'Convenience & Flexibility';
+            outcomeOptions.appendChild(convenienceOutcome);
+            
+            decisionTree.appendChild(outcomeOptions);
+        }
+
+        // Get charging label
+        function getChargingLabel(chargingType) {
+            switch(chargingType) {
+                case 'none': return 'No Charging';
+                case 'standard': return 'Standard Outlet';
+                case 'level2': return 'Level 2 Charger';
+                case 'dcfast': return 'DC Fast Charger';
+                case 'limited': return 'Limited Access';
+                case 'free': return 'Free Charging';
+                case 'paid': return 'Paid Charging';
+                default: return chargingType;
+            }
+        }
+
+        // Calculate scenario results
+        function calculateScenarioResults(initialDecision, homeCharging, workCharging, timeHorizon, 
+                                        fuelPriceChange, electricityPriceChange, batteryImprovement) {
+            // Base annual savings
+            let baseAnnualSavings = 25000;
+            
+            // Adjust based on initial decision
+            if (initialDecision === 'lease') {
+                baseAnnualSavings *= 0.8; // Lower savings due to leasing costs
+            } else if (initialDecision === 'hybrid') {
+                baseAnnualSavings *= 0.6; // Lower savings due to hybrid being less efficient than full EV
+            }
+            
+            // Adjust based on charging infrastructure
+            if (homeCharging === 'none') {
+                baseAnnualSavings *= 0.7; // Reduced savings due to reliance on public charging
+            } else if (homeCharging === 'dcfast') {
+                baseAnnualSavings *= 1.1; // Increased savings due to efficient charging
+            }
+            
+            if (workCharging === 'free') {
+                baseAnnualSavings *= 1.2; // Increased savings due to free charging at work
+            }
+            
+            // Calculate yearly data with price changes
+            const yearlyData = [];
+            let cumulativeSavings = 0;
+            
+            for (let year = 1; year <= timeHorizon; year++) {
+                // Apply price changes
+                const fuelMultiplier = Math.pow(1 + (fuelPriceChange / 100), year - 1);
+                const electricityMultiplier = Math.pow(1 + (electricityPriceChange / 100), year - 1);
+                const batteryMultiplier = Math.pow(1 + (batteryImprovement / 100), year - 1);
+                
+                // Calculate adjusted savings for the year
+                const adjustedSavings = baseAnnualSavings * fuelMultiplier / electricityMultiplier * batteryMultiplier;
+                cumulativeSavings += adjustedSavings;
+                
+                yearlyData.push({
+                    year: year,
+                    savings: adjustedSavings,
+                    cumulative: cumulativeSavings
+                });
+            }
+            
+            // Calculate risk level (0-1)
+            let riskLevel = 0.3; // Base risk
+            
+            if (homeCharging === 'none') riskLevel += 0.3;
+            if (workCharging === 'none') riskLevel += 0.2;
+            if (initialDecision === 'buy') riskLevel += 0.1;
+            if (Math.abs(fuelPriceChange) > 10) riskLevel += 0.1;
+            if (Math.abs(electricityPriceChange) > 5) riskLevel += 0.1;
+            
+            riskLevel = Math.min(riskLevel, 1); // Cap at 1
+            
+            // Calculate flexibility score (0-1)
+            let flexibilityScore = 0.7; // Base flexibility
+            
+            if (initialDecision === 'lease') flexibilityScore += 0.2;
+            if (homeCharging !== 'none') flexibilityScore += 0.1;
+            if (workCharging !== 'none') flexibilityScore += 0.1;
+            if (timeHorizon <= 3) flexibilityScore += 0.1;
+            
+            flexibilityScore = Math.min(flexibilityScore, 1); // Cap at 1
+            
+            // Generate optimal path description
+            let optimalPath = '';
+            
+            if (initialDecision === 'buy') {
+                optimalPath = 'Purchasing a new EV';
+            } else if (initialDecision === 'lease') {
+                optimalPath = 'Leasing an EV';
+            } else {
+                optimalPath = 'Starting with a hybrid vehicle';
+            }
+            
+            optimalPath += ' with ';
+            
+            if (homeCharging !== 'none') {
+                optimalPath += 'home charging';
+                if (workCharging !== 'none') {
+                    optimalPath += ' and workplace charging';
+                }
+            } else if (workCharging !== 'none') {
+                optimalPath += 'workplace charging';
+            } else {
+                optimalPath += 'public charging infrastructure';
+            }
+            
+            optimalPath += ' provides the best balance of cost savings and convenience.';
+            
+            return {
+                totalSavings: cumulativeSavings,
+                riskLevel: riskLevel,
+                flexibilityScore: flexibilityScore,
+                optimalPath: optimalPath,
+                yearlyData: yearlyData
+            };
+        }
+
+        // Create scenario chart
+        function createScenarioChart(yearlyData) {
+            const ctx = document.getElementById('scenarioChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.scenarioChartInstance) {
+                window.scenarioChartInstance.destroy();
+            }
+            
+            // Prepare data for chart
+            const years = yearlyData.map(data => `Year ${data.year}`);
+            const cumulativeSavings = yearlyData.map(data => data.cumulative);
+            const annualSavings = yearlyData.map(data => data.savings);
+            
+            window.scenarioChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Annual Savings (R)',
+                            data: annualSavings,
+                            backgroundColor: 'rgba(22, 163, 74, 0.5)',
+                            borderColor: 'rgba(22, 163, 74, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Cumulative Savings (R)',
+                            data: cumulativeSavings,
+                            type: 'line',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (R)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: R${context.raw.toFixed(0)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Risk tolerance selection
+        function selectRiskTolerance(tolerance) {
+            // Remove active class from all cards
+            const cards = document.querySelectorAll('#risk-tab .scenario-card');
+            cards.forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to selected card
+            event.target.closest('.scenario-card').classList.add('active');
+            
+            // Store selected tolerance
+            window.selectedRiskTolerance = tolerance;
+        }
+
+        // Run Monte Carlo simulation
+        function runMonteCarlo() {
+            // Show loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            // Get parameters
+            const riskTolerance = window.selectedRiskTolerance || 'medium';
+            const investmentHorizon = parseInt(document.getElementById('investmentHorizon').value);
+            const budgetFlexibility = parseInt(document.getElementById('budgetFlexibility').value) / 100;
+            
+            const fuelPriceVolatility = document.getElementById('fuelPriceVolatility').checked;
+            const batteryDegradation = document.getElementById('batteryDegradation').checked;
+            const resaleValue = document.getElementById('resaleValue').checked;
+            const policyChanges = document.getElementById('policyChanges').checked;
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Run Monte Carlo simulation (simplified for demo)
+                const simulationResults = runMonteCarloSimulation(
+                    riskTolerance, investmentHorizon, budgetFlexibility,
+                    fuelPriceVolatility, batteryDegradation, resaleValue, policyChanges
+                );
+                
+                // Update UI
+                document.getElementById('expectedValue').textContent = `R${simulationResults.expectedValue.toFixed(0)}`;
+                document.getElementById('standardDeviation').textContent = `R${simulationResults.standardDeviation.toFixed(0)}`;
+                document.getElementById('valueAtRisk').textContent = `R${simulationResults.valueAtRisk.toFixed(0)}`;
+                document.getElementById('probabilityOfLoss').textContent = `${(simulationResults.probabilityOfLoss * 100).toFixed(1)}%`;
+                
+                // Create risk distribution chart
+                createRiskDistributionChart(simulationResults.distribution);
+                
+                // Create tornado chart
+                createTornadoChart(simulationResults.sensitivity);
+                
+                // Generate simulation outcomes
+                generateSimulationOutcomes(simulationResults.outcomes);
+                
+                // Generate risk mitigation strategies
+                generateRiskMitigationStrategies(simulationResults.riskFactors);
+                
+                // Show results
+                document.getElementById('riskResults').classList.remove('hidden');
+                document.getElementById('riskPlaceholder').classList.add('hidden');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 2000);
+        }
+
+        // Run Monte Carlo simulation (simplified)
+        function runMonteCarloSimulation(riskTolerance, investmentHorizon, budgetFlexibility,
+                                       fuelPriceVolatility, batteryDegradation, resaleValue, policyChanges) {
+            // Number of simulations
+            const numSimulations = 1000;
+            
+            // Base parameters
+            const baseAnnualSavings = 25000;
+            const evPricePremium = 150000;
+            
+            // Risk factors
+            const riskFactors = [];
+            const sensitivity = {};
+            
+            if (fuelPriceVolatility) {
+                riskFactors.push('Fuel Price Volatility');
+                sensitivity['Fuel Price Volatility'] = 0.3;
+            }
+            
+            if (batteryDegradation) {
+                riskFactors.push('Battery Degradation');
+                sensitivity['Battery Degradation'] = 0.25;
+            }
+            
+            if (resaleValue) {
+                riskFactors.push('Resale Value Uncertainty');
+                sensitivity['Resale Value'] = 0.2;
+            }
+            
+            if (policyChanges) {
+                riskFactors.push('Policy Changes');
+                sensitivity['Policy Changes'] = 0.15;
+            }
+            
+            // Add other factors
+            sensitivity['Electricity Price Changes'] = 0.2;
+            sensitivity['Maintenance Costs'] = 0.15;
+            sensitivity['Technology Advancement'] = 0.1;
+            
+            // Run simulations
+            const outcomes = [];
+            let totalNPV = 0;
+            let totalSquaredDeviation = 0;
+            
+            // Risk adjustment based on tolerance
+            let riskAdjustment = 1;
+            if (riskTolerance === 'low') riskAdjustment = 0.8;
+            if (riskTolerance === 'high') riskAdjustment = 1.2;
+            
+            for (let i = 0; i < numSimulations; i++) {
+                // Generate random factors
+                const fuelPriceFactor = fuelPriceVolatility ? (Math.random() * 0.4 + 0.8) : 1;
+                const batteryFactor = batteryDegradation ? (Math.random() * 0.3 + 0.85) : 1;
+                const resaleFactor = resaleValue ? (Math.random() * 0.5 + 0.7) : 1;
+                const policyFactor = policyChanges ? (Math.random() * 0.4 + 0.8) : 1;
+                const electricityFactor = Math.random() * 0.2 + 0.9;
+                const maintenanceFactor = Math.random() * 0.3 + 0.85;
+                const technologyFactor = Math.random() * 0.2 + 0.9;
+                
+                // Calculate annual savings with random factors
+                let annualSavings = baseAnnualSavings * fuelPriceFactor / electricityFactor * batteryFactor * maintenanceFactor * technologyFactor * policyFactor * riskAdjustment;
+                
+                // Calculate NPV over investment horizon
+                let npv = -evPricePremium;
+                let cumulativeSavings = 0;
+                
+                for (let year = 1; year <= investmentHorizon; year++) {
+                    // Apply discount rate (simplified)
+                    const discountRate = 0.05 + (0.02 * (1 - budgetFlexibility));
+                    const discountedSavings = annualSavings / Math.pow(1 + discountRate, year);
+                    npv += discountedSavings;
+                    cumulativeSavings += annualSavings;
+                }
+                
+                // Add resale value at the end
+                npv += evPricePremium * 0.5 * resaleFactor;
+                
+                // Store outcome
+                outcomes.push({
+                    npv: npv,
+                    cumulativeSavings: cumulativeSavings
+                });
+                
+                // Update running totals
+                totalNPV += npv;
+            }
+            
+            // Calculate statistics
+            const expectedValue = totalNPV / numSimulations;
+            
+            for (const outcome of outcomes) {
+                totalSquaredDeviation += Math.pow(outcome.npv - expectedValue, 2);
+            }
+            
+            const standardDeviation = Math.sqrt(totalSquaredDeviation / numSimulations);
+            
+            // Calculate Value at Risk (95% confidence)
+            const sortedOutcomes = outcomes.map(o => o.npv).sort((a, b) => a - b);
+            const varIndex = Math.floor(numSimulations * 0.05);
+            const valueAtRisk = sortedOutcomes[varIndex];
+            
+            // Calculate probability of loss
+            const lossCount = outcomes.filter(o => o.npv < 0).length;
+            const probabilityOfLoss = lossCount / numSimulations;
+            
+            // Create distribution for chart
+            const distribution = [];
+            const binSize = standardDeviation / 2;
+            const min = expectedValue - 4 * standardDeviation;
+            const max = expectedValue + 4 * standardDeviation;
+            
+            for (let bin = min; bin < max; bin += binSize) {
+                const count = outcomes.filter(o => o.npv >= bin && o.npv < bin + binSize).length;
+                distribution.push({
+                    bin: bin,
+                    count: count,
+                    frequency: count / numSimulations
+                });
+            }
+            
+            return {
+                expectedValue: expectedValue,
+                standardDeviation: standardDeviation,
+                valueAtRisk: valueAtRisk,
+                probabilityOfLoss: probabilityOfLoss,
+                distribution: distribution,
+                sensitivity: sensitivity,
+                outcomes: outcomes,
+                riskFactors: riskFactors
+            };
+        }
+
+        // Create risk distribution chart
+        function createRiskDistributionChart(distribution) {
+            const ctx = document.getElementById('riskDistributionChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.riskDistributionChartInstance) {
+                window.riskDistributionChartInstance.destroy();
+            }
+            
+            // Prepare data for chart
+            const labels = distribution.map(d => `R${d.bin.toFixed(0)}`);
+            const data = distribution.map(d => d.frequency);
+            
+            window.riskDistributionChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Probability',
+                        data: data,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Probability'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Value (R)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Probability: ${(context.raw * 100).toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create tornado chart
+        function createTornadoChart(sensitivity) {
+            const ctx = document.getElementById('tornadoChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.tornadoChartInstance) {
+                window.tornadoChartInstance.destroy();
+            }
+            
+            // Prepare data for chart
+            const factors = Object.keys(sensitivity);
+            const impacts = Object.values(sensitivity);
+            
+            // Sort by impact
+            const sortedIndices = impacts.map((_, i) => i).sort((a, b) => impacts[b] - impacts[a]);
+            const sortedFactors = sortedIndices.map(i => factors[i]);
+            const sortedImpacts = sortedIndices.map(i => impacts[i]);
+            
+            window.tornadoChartInstance = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: sortedFactors,
+                    datasets: [{
+                        label: 'Impact on NPV',
+                        data: sortedImpacts,
+                        backgroundColor: 'rgba(22, 163, 74, 0.5)',
+                        borderColor: 'rgba(22, 163, 74, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Impact Factor'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Impact: ${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate simulation outcomes
+        function generateSimulationOutcomes(outcomes) {
+            const container = document.getElementById('simulationOutcomes');
+            container.innerHTML = '';
+            
+            // Sort outcomes by NPV
+            const sortedOutcomes = [...outcomes].sort((a, b) => b.npv - a.npv);
+            
+            // Get top 3 and bottom 3 outcomes
+            const topOutcomes = sortedOutcomes.slice(0, 3);
+            const bottomOutcomes = sortedOutcomes.slice(-3);
+            
+            // Add top outcomes
+            topOutcomes.forEach((outcome, index) => {
+                const outcomeDiv = document.createElement('div');
+                outcomeDiv.className = 'simulation-result positive';
+                outcomeDiv.innerHTML = `
+                    <div>
+                        <div class="font-medium">Best Case Scenario ${index + 1}</div>
+                        <div class="text-sm text-gray-600">Cumulative Savings: R${outcome.cumulativeSavings.toFixed(0)}</div>
+                    </div>
+                    <div class="font-semibold text-green-600">R${outcome.npv.toFixed(0)}</div>
+                `;
+                container.appendChild(outcomeDiv);
+            });
+            
+            // Add median outcome
+            const medianIndex = Math.floor(outcomes.length / 2);
+            const medianOutcome = sortedOutcomes[medianIndex];
+            
+            const medianDiv = document.createElement('div');
+            medianDiv.className = 'simulation-result neutral';
+            medianDiv.innerHTML = `
+                <div>
+                    <div class="font-medium">Median Outcome</div>
+                    <div class="text-sm text-gray-600">Cumulative Savings: R${medianOutcome.cumulativeSavings.toFixed(0)}</div>
+                </div>
+                <div class="font-semibold text-blue-600">R${medianOutcome.npv.toFixed(0)}</div>
+            `;
+            container.appendChild(medianDiv);
+            
+            // Add bottom outcomes
+            bottomOutcomes.forEach((outcome, index) => {
+                const outcomeDiv = document.createElement('div');
+                outcomeDiv.className = 'simulation-result negative';
+                outcomeDiv.innerHTML = `
+                    <div>
+                        <div class="font-medium">Worst Case Scenario ${index + 1}</div>
+                        <div class="text-sm text-gray-600">Cumulative Savings: R${outcome.cumulativeSavings.toFixed(0)}</div>
+                    </div>
+                    <div class="font-semibold text-red-600">R${outcome.npv.toFixed(0)}</div>
+                `;
+                container.appendChild(outcomeDiv);
+            });
+        }
+
+        // Generate risk mitigation strategies
+        function generateRiskMitigationStrategies(riskFactors) {
+            const container = document.getElementById('riskMitigation');
+            container.innerHTML = '';
+            
+            const strategies = {
+                'Fuel Price Volatility': 'Consider a fixed-rate electricity plan or solar panels to hedge against fuel price volatility.',
+                'Battery Degradation': 'Choose vehicles with strong battery warranties and consider battery health insurance.',
+                'Resale Value Uncertainty': 'Lease instead of buying to transfer resale risk, or choose brands with historically strong resale values.',
+                'Policy Changes': 'Stay informed about EV policy developments and consider the timing of your purchase based on current incentives.',
+                'Electricity Price Changes': 'Install solar panels or consider time-of-use electricity plans to optimize charging costs.',
+                'Maintenance Costs': 'Choose vehicles with comprehensive maintenance plans and good service network coverage.',
+                'Technology Advancement': 'Consider leasing or shorter ownership periods to take advantage of rapidly improving technology.'
+            };
+            
+            riskFactors.forEach(factor => {
+                if (strategies[factor]) {
+                    const li = document.createElement('li');
+                    li.textContent = strategies[factor];
+                    container.appendChild(li);
+                }
+            });
+            
+            // Add general strategies
+            const generalStrategies = [
+                'Diversify your transportation options to reduce dependency on a single vehicle.',
+                'Start with a used or more affordable EV to test the waters before committing to a higher-end model.',
+                'Consider EV subscription services that offer flexibility to switch vehicles as your needs change.'
+            ];
+            
+            generalStrategies.forEach(strategy => {
+                const li = document.createElement('li');
+                li.textContent = strategy;
+                container.appendChild(li);
+            });
+        }
+
+        // Analysis type selection
+        function selectAnalysisType(type) {
+            // Remove active class from all cards
+            const cards = document.querySelectorAll('#ai-tab .scenario-card');
+            cards.forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to selected card
+            event.target.closest('.scenario-card').classList.add('active');
+            
+            // Store selected analysis type
+            window.selectedAnalysisType = type;
+        }
+
+        // Run AI analysis
+        function runAIAnalysis() {
+            // Show loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            // Get parameters
+            const analysisType = window.selectedAnalysisType || 'savings';
+            const preferLocal = document.getElementById('preferLocal').checked;
+            const considerIncentives = document.getElementById('considerIncentives').checked;
+            const includeResale = document.getElementById('includeResale').checked;
+            const minBudget = parseInt(document.getElementById('minBudget').value);
+            const maxBudget = parseInt(document.getElementById('maxBudget').value);
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Run AI analysis (simplified for demo)
+                const analysisResults = runAIAnalysisSimulation(
+                    analysisType, preferLocal, considerIncentives, includeResale, minBudget, maxBudget
+                );
+                
+                // Update UI
+                document.getElementById('topRecommendation').innerHTML = analysisResults.topRecommendation;
+                
+                // Generate personalized insights
+                generatePersonalizedInsights(analysisResults.insights);
+                
+                // Create AI comparison chart
+                createAIComparisonChart(analysisResults.comparisonData);
+                
+                // Generate alternative options
+                generateAlternativeOptions(analysisResults.alternatives);
+                
+                // Generate implementation strategy
+                document.getElementById('implementationStrategy').innerHTML = analysisResults.implementationStrategy;
+                
+                // Show results
+                document.getElementById('aiResults').classList.remove('hidden');
+                document.getElementById('aiPlaceholder').classList.add('hidden');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 2500);
+        }
+
+        // Run AI analysis simulation (simplified)
+        function runAIAnalysisSimulation(analysisType, preferLocal, considerIncentives, includeResale, minBudget, maxBudget) {
+            // Vehicle recommendations based on analysis type
+            const recommendations = {
+                'savings': {
+                    primary: {
+                        name: 'Nissan Leaf',
+                        reason: 'Offers the best balance of upfront cost and running costs for your budget range.',
+                        annualSavings: 28000,
+                        breakEven: 4.2,
+                        score: 92
+                    },
+                    alternatives: [
+                        {
+                            name: 'Mini Cooper SE',
+                            reason: 'Slightly higher upfront cost but better efficiency and lower running costs.',
+                            annualSavings: 26000,
+                            breakEven: 4.8,
+                            score: 88
+                        },
+                        {
+                            name: 'BMW i3',
+                            reason: 'Premium features with good efficiency, higher upfront cost but strong resale value.',
+                            annualSavings: 24000,
+                            breakEven: 5.1,
+                            score: 85
+                        }
+                    ]
+                },
+                'environmental': {
+                    primary: {
+                        name: 'Tesla Model 3',
+                        reason: 'Longest range and highest efficiency, resulting in the lowest carbon footprint per kilometer.',
+                        annualSavings: 32000,
+                        breakEven: 5.5,
+                        score: 95
+                    },
+                    alternatives: [
+                        {
+                            name: 'Nissan Leaf',
+                            reason: 'Strong environmental performance with more affordable price point.',
+                            annualSavings: 28000,
+                            breakEven: 4.2,
+                            score: 90
+                        },
+                        {
+                            name: 'Volvo XC40 Recharge',
+                            reason: 'Premium SUV with good efficiency and strong sustainability credentials.',
+                            annualSavings: 30000,
+                            breakEven: 6.0,
+                            score: 87
+                        }
+                    ]
+                },
+                'totalCost': {
+                    primary: {
+                        name: 'Nissan Leaf',
+                        reason: 'Lowest total cost of ownership when factoring in purchase price, maintenance, and fuel savings.',
+                        annualSavings: 28000,
+                        breakEven: 4.2,
+                        score: 94
+                    },
+                    alternatives: [
+                        {
+                            name: 'Mini Cooper SE',
+                            reason: 'Competitive total cost with premium features and driving experience.',
+                            annualSavings: 26000,
+                            breakEven: 4.8,
+                            score: 89
+                        },
+                        {
+                            name: 'BMW i3',
+                            reason: 'Higher initial cost but excellent efficiency and lower maintenance costs.',
+                            annualSavings: 24000,
+                            breakEven: 5.1,
+                            score: 86
+                        }
+                    ]
+                },
+                'charging': {
+                    primary: {
+                        name: 'Tesla Model 3',
+                        reason: 'Best charging infrastructure support with Supercharger network and fastest charging times.',
+                        annualSavings: 32000,
+                        breakEven: 5.5,
+                        score: 96
+                    },
+                    alternatives: [
+                        {
+                            name: 'BMW i3',
+                            reason: 'Flexible charging options with good DC fast charging capability.',
+                            annualSavings: 24000,
+                            breakEven: 5.1,
+                            score: 85
+                        },
+                        {
+                            name: 'Nissan Leaf',
+                            reason: 'Good charging options with widespread CHAdeMO network support.',
+                            annualSavings: 28000,
+                            breakEven: 4.2,
+                            score: 82
+                        }
+                    ]
+                }
+            };
+            
+            const recommendation = recommendations[analysisType];
+            
+            // Adjust for preferences
+            if (preferLocal) {
+                // Adjust scores for locally manufactured vehicles
+                if (recommendation.primary.name === 'BMW i3') {
+                    recommendation.primary.score += 5;
+                }
+                if (recommendation.alternatives[0].name === 'BMW i3') {
+                    recommendation.alternatives[0].score += 5;
+                }
+            }
+            
+            // Generate top recommendation HTML
+            const topRecommendationHTML = `
+                <div class="flex items-center mb-4">
+                    <div class="text-2xl font-bold text-gray-900 mr-4">${recommendation.primary.name}</div>
+                    <div class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Score: ${recommendation.primary.score}/100</div>
+                </div>
+                <p class="text-gray-700 mb-4">${recommendation.primary.reason}</p>
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                    <div class="text-center">
+                        <div class="text-lg font-semibold text-green-600">R${recommendation.primary.annualSavings.toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Annual Savings</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-semibold text-green-600">${recommendation.primary.breakEven} years</div>
+                        <div class="text-sm text-gray-600">Break-even Period</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-semibold text-green-600">${(recommendation.primary.score / 20).toFixed(1)}/5</div>
+                        <div class="text-sm text-gray-600">Overall Rating</div>
+                    </div>
+                </div>
+            `;
+            
+            // Generate insights based on analysis type
+            const insights = {
+                'savings': [
+                    'Based on your driving patterns, you could save up to R280,000 over 10 years by switching to an EV.',
+                    'Charging at home overnight could reduce your electricity costs by an additional 15% compared to public charging.',
+                    'Your current fuel expenditure is approximately 35% higher than what you would spend on electricity with an EV.'
+                ],
+                'environmental': [
+                    'Switching to an EV would reduce your carbon footprint by approximately 4.2 tons of CO2 per year.',
+                    'Over the lifetime of the vehicle, this is equivalent to planting 190 trees.',
+                    'Your EV would be responsible for 65% fewer emissions than your current vehicle, even when accounting for electricity generation.'
+                ],
+                'totalCost': [
+                    'When factoring in maintenance, fuel, and resale value, the total cost of ownership for an EV is 28% lower than a comparable petrol vehicle.',
+                    'EVs have fewer moving parts, resulting in approximately 40% lower maintenance costs over 5 years.',
+                    'Battery technology is improving rapidly, with degradation rates dropping by about 2% per year, extending the useful life of EVs.'
+                ],
+                'charging': [
+                    'With a home charger, you can wake up to a full battery every morning, eliminating the need for weekly petrol station visits.',
+                    'Public charging infrastructure in the Eastern Cape is expanding rapidly, with 15+ new stations planned in the next year.',
+                    'Smart charging during off-peak hours could reduce your electricity costs by up to 25%.'
+                ]
+            };
+            
+            // Generate comparison data for chart
+            const comparisonData = {
+                labels: ['Price', 'Range', 'Charging Time', 'Efficiency', 'Features', 'Resale Value'],
+                datasets: [
+                    {
+                        label: recommendation.primary.name,
+                        data: [70, 85, 90, 80, 85, 80],
+                        backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                        borderColor: 'rgba(22, 163, 74, 1)',
+                        pointBackgroundColor: 'rgba(22, 163, 74, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: recommendation.alternatives[0].name,
+                        data: [80, 70, 75, 85, 75, 70],
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: recommendation.alternatives[1].name,
+                        data: [65, 75, 80, 75, 90, 85],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 2
+                    }
+                ]
+            };
+            
+            // Generate implementation strategy
+            const implementationStrategies = {
+                'savings': `
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 1: Research & Planning (1-2 months)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Compare financing options and calculate total cost of ownership</li>
+                        <li>Assess home charging feasibility and get quotes for installation</li>
+                        <li>Research available government incentives and rebates</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 2: Purchase & Setup (1 month)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Finalize vehicle purchase and financing</li>
+                        <li>Install home charging equipment</li>
+                        <li>Set up electricity plan optimization for charging</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 3: Optimization (Ongoing)</h4>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>Monitor charging patterns and adjust for maximum savings</li>
+                        <li>Track actual savings vs. projections</li>
+                        <li>Plan for battery health optimization</li>
+                    </ul>
+                `,
+                'environmental': `
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 1: Assessment (1 month)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Calculate current carbon footprint from transportation</li>
+                        <li>Research renewable energy options for home charging</li>
+                        <li>Identify most efficient EV options for your needs</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 2: Transition (1-2 months)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Purchase EV and install renewable energy charging if feasible</li>
+                        <li>Set up carbon tracking for your new vehicle</li>
+                        <li>Plan optimal routes to maximize efficiency</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 3: Maximization (Ongoing)</h4>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>Continuously monitor and minimize environmental impact</li>
+                        <li>Consider carbon offset programs for remaining emissions</li>
+                        <li>Share your experience to encourage others to make the switch</li>
+                    </ul>
+                `,
+                'totalCost': `
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 1: Financial Analysis (1-2 months)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Detailed total cost of ownership analysis for 5-10 year period</li>
+                        <li>Comparison of financing options (purchase, lease, subscription)</li>
+                        <li>Assessment of insurance costs and maintenance requirements</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 2: Acquisition (1 month)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Secure financing with most favorable terms</li>
+                        <li>Complete purchase with all applicable incentives</li>
+                        <li>Set up maintenance schedule and budget</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 3: Cost Management (Ongoing)</h4>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>Track all costs and compare against projections</li>
+                        <li>Optimize charging schedule for lowest electricity costs</li>
+                        <li>Plan for battery replacement or vehicle upgrade at optimal time</li>
+                    </ul>
+                `,
+                'charging': `
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 1: Infrastructure Assessment (1 month)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Evaluate home charging options and electrical capacity</li>
+                        <li>Map public charging stations along regular routes</li>
+                        <li>Assess workplace charging availability</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 2: Setup (1-2 months)</h4>
+                    <ul class="list-disc pl-5 text-gray-700 mb-4">
+                        <li>Install optimal home charging solution</li>
+                        <li>Set up charging apps and payment methods</li>
+                        <li>Establish charging routines and habits</li>
+                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-2">Phase 3: Optimization (Ongoing)</h4>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>Continuously evaluate charging patterns and costs</li>
+                        <li>Take advantage of off-peak electricity rates</li>
+                        <li>Stay updated on new charging infrastructure in your area</li>
+                    </ul>
+                `
+            };
+            
+            return {
+                topRecommendation: topRecommendationHTML,
+                insights: insights[analysisType],
+                comparisonData: comparisonData,
+                alternatives: recommendation.alternatives,
+                implementationStrategy: implementationStrategies[analysisType]
+            };
+        }
+
+        // Generate personalized insights
+        function generatePersonalizedInsights(insights) {
+            const container = document.getElementById('personalizedInsights');
+            container.innerHTML = '';
+            
+            insights.forEach(insight => {
+                const insightDiv = document.createElement('div');
+                insightDiv.className = 'insight-card';
+                insightDiv.innerHTML = `<p class="text-gray-700">${insight}</p>`;
+                container.appendChild(insightDiv);
+            });
+        }
+
+        // Create AI comparison chart
+        function createAIComparisonChart(comparisonData) {
+            const ctx = document.getElementById('aiComparisonChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.aiComparisonChartInstance) {
+                window.aiComparisonChartInstance.destroy();
+            }
+            
+            window.aiComparisonChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: comparisonData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}/100`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate alternative options
+        function generateAlternativeOptions(alternatives) {
+            const container = document.getElementById('alternativeOptions');
+            container.innerHTML = '';
+            
+            alternatives.forEach((alternative, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'scenario-card';
+                optionDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-gray-900">${alternative.name}</h3>
+                        <div class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Score: ${alternative.score}/100</div>
+                    </div>
+                    <p class="text-gray-600 mb-3">${alternative.reason}</p>
+                    <div class="grid grid-cols-3 gap-2 text-sm">
+                        <div class="text-center">
+                            <div class="font-medium text-green-600">R${alternative.annualSavings.toLocaleString()}</div>
+                            <div class="text-gray-500">Annual Savings</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-medium text-green-600">${alternative.breakEven} years</div>
+                            <div class="text-gray-500">Break-even</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-medium text-green-600">${(alternative.score / 20).toFixed(1)}/5</div>
+                            <div class="text-gray-500">Rating</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(optionDiv);
+            });
+        }
+
+        // Compare vehicles
+        function compareVehicles() {
+            // Get selected vehicles
+            const vehicle1Id = document.getElementById('vehicle1').value;
+            const vehicle2Id = document.getElementById('vehicle2').value;
+            const vehicle3Id = document.getElementById('vehicle3').value;
+            const vehicle4Id = document.getElementById('vehicle4').value;
+            
+            // Get comparison criteria
+            const comparePrice = document.getElementById('comparePrice').checked;
+            const compareRange = document.getElementById('compareRange').checked;
+            const compareCharging = document.getElementById('compareCharging').checked;
+            const compareEfficiency = document.getElementById('compareEfficiency').checked;
+            const compareFeatures = document.getElementById('compareFeatures').checked;
+            const compareWarranty = document.getElementById('compareWarranty').checked;
+            const compareService = document.getElementById('compareService').checked;
+            const compareResale = document.getElementById('compareResale').checked;
+            
+            // Collect selected vehicles
+            const selectedVehicles = [];
+            if (vehicle1Id) selectedVehicles.push(vehicle1Id);
+            if (vehicle2Id) selectedVehicles.push(vehicle2Id);
+            if (vehicle3Id) selectedVehicles.push(vehicle3Id);
+            if (vehicle4Id) selectedVehicles.push(vehicle4Id);
+            
+            if (selectedVehicles.length < 2) {
+                alert('Please select at least two vehicles to compare.');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Generate comparison table
+                generateComparisonTable(selectedVehicles, {
+                    price: comparePrice,
+                    range: compareRange,
+                    charging: compareCharging,
+                    efficiency: compareEfficiency,
+                    features: compareFeatures,
+                    warranty: compareWarranty,
+                    service: compareService,
+                    resale: compareResale
+                });
+                
+                // Create radar chart
+                createRadarChart(selectedVehicles);
+                
+                // Calculate best value and performance
+                calculateBestOptions(selectedVehicles);
+                
+                // Show results
+                document.getElementById('comparisonResults').classList.remove('hidden');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1000);
+        }
+
+        // Generate comparison table
+        function generateComparisonTable(vehicleIds, criteria) {
+            // Update headers
+            for (let i = 0; i < 4; i++) {
+                const header = document.getElementById(`v${i + 1}Header`);
+                if (vehicleIds[i]) {
+                    header.textContent = vehicleData[vehicleIds[i]].name;
+                } else {
+                    header.textContent = '-';
+                }
+            }
+            
+            // Generate table body
+            const tableBody = document.getElementById('comparisonTableBody');
+            tableBody.innerHTML = '';
+            
+            // Attributes to compare
+            const attributes = [
+                { id: 'price', name: 'Price (R)', format: (value) => `R${value.toLocaleString()}` },
+                { id: 'range', name: 'Range (km)', format: (value) => `${value} km` },
+                { id: 'chargingTime', name: 'Charging Time (hours)', format: (value) => value < 1 ? `${(value * 60).toFixed(0)} min` : `${value} hours` },
+                { id: 'efficiency', name: 'Efficiency (kWh/100km)', format: (value) => `${value} kWh/100km` },
+                { id: 'features', name: 'Features (out of 10)', format: (value) => `${value}/10` },
+                { id: 'warranty', name: 'Warranty (years)', format: (value) => `${value} years` },
+                { id: 'service', name: 'Service Network (out of 10)', format: (value) => `${value}/10` },
+                { id: 'resale', name: 'Resale Value (out of 10)', format: (value) => `${value}/10` }
+            ];
+            
+            // Add rows for each selected attribute
+            attributes.forEach(attr => {
+                if (criteria[attr.id]) {
+                    const row = document.createElement('tr');
+                    
+                    // Attribute name cell
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = attr.name;
+                    nameCell.className = 'font-medium';
+                    row.appendChild(nameCell);
+                    
+                    // Vehicle data cells
+                    for (let i = 0; i < 4; i++) {
+                        const cell = document.createElement('td');
+                        if (vehicleIds[i]) {
+                            const value = vehicleData[vehicleIds[i]][attr.id];
+                            cell.textContent = attr.format(value);
+                        } else {
+                            cell.textContent = '-';
+                        }
+                        row.appendChild(cell);
+                    }
+                    
+                    tableBody.appendChild(row);
+                }
+            });
+        }
+
+        // Create radar chart
+        function createRadarChart(vehicleIds) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.radarChartInstance) {
+                window.radarChartInstance.destroy();
+            }
+            
+            // Prepare data for chart
+            const labels = ['Price', 'Range', 'Charging', 'Efficiency', 'Features', 'Warranty', 'Service', 'Resale'];
+            const datasets = [];
+            
+            const colors = [
+                {
+                    backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    pointBackgroundColor: 'rgba(22, 163, 74, 1)'
+                },
+                {
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)'
+                },
+                {
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    pointBackgroundColor: 'rgba(139, 92, 246, 1)'
+                },
+                {
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    pointBackgroundColor: 'rgba(245, 158, 11, 1)'
+                }
+            ];
+            
+            vehicleIds.forEach((vehicleId, index) => {
+                const vehicle = vehicleData[vehicleId];
+                
+                // Normalize values (invert price so lower is better)
+                const normalizedPrice = 100 - ((vehicle.price - 500000) / 500000 * 100);
+                const normalizedRange = (vehicle.range / 500) * 100;
+                const normalizedCharging = 100 - ((vehicle.chargingTime - 0.33) / 7.17 * 100);
+                const normalizedEfficiency = 100 - ((vehicle.efficiency - 13) / 9.8 * 100);
+                const normalizedFeatures = (vehicle.features / 10) * 100;
+                const normalizedWarranty = (vehicle.warranty / 10) * 100;
+                const normalizedService = (vehicle.service / 10) * 100;
+                const normalizedResale = (vehicle.resale / 10) * 100;
+                
+                datasets.push({
+                    label: vehicle.name,
+                    data: [
+                        normalizedPrice,
+                        normalizedRange,
+                        normalizedCharging,
+                        normalizedEfficiency,
+                        normalizedFeatures,
+                        normalizedWarranty,
+                        normalizedService,
+                        normalizedResale
+                    ],
+                    backgroundColor: colors[index].backgroundColor,
+                    borderColor: colors[index].borderColor,
+                    pointBackgroundColor: colors[index].pointBackgroundColor,
+                    borderWidth: 2
+                });
+            });
+            
+            window.radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw.toFixed(0)}/100`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calculate best options
+        function calculateBestOptions(vehicleIds) {
+            // Calculate scores for each vehicle
+            const vehicleScores = {};
+            
+            vehicleIds.forEach(vehicleId => {
+                const vehicle = vehicleData[vehicleId];
+                
+                // Calculate value score (price, efficiency, operating costs)
+                const priceScore = 100 - ((vehicle.price - 500000) / 500000 * 100);
+                const efficiencyScore = 100 - ((vehicle.efficiency - 13) / 9.8 * 100);
+                const valueScore = (priceScore * 0.5) + (efficiencyScore * 0.5);
+                
+                // Calculate performance score (range, charging, features)
+                const rangeScore = (vehicle.range / 500) * 100;
+                const chargingScore = 100 - ((vehicle.chargingTime - 0.33) / 7.17 * 100);
+                const featuresScore = (vehicle.features / 10) * 100;
+                const performanceScore = (rangeScore * 0.4) + (chargingScore * 0.3) + (featuresScore * 0.3);
+                
+                vehicleScores[vehicleId] = {
+                    name: vehicle.name,
+                    valueScore: valueScore,
+                    performanceScore: performanceScore
+                };
+            });
+            
+            // Find best value and performance
+            let bestValueVehicle = '';
+            let bestValueScore = -1;
+            let bestPerformanceVehicle = '';
+            let bestPerformanceScore = -1;
+            
+            Object.keys(vehicleScores).forEach(vehicleId => {
+                if (vehicleScores[vehicleId].valueScore > bestValueScore) {
+                    bestValueScore = vehicleScores[vehicleId].valueScore;
+                    bestValueVehicle = vehicleId;
+                }
+                
+                if (vehicleScores[vehicleId].performanceScore > bestPerformanceScore) {
+                    bestPerformanceScore = vehicleScores[vehicleId].performanceScore;
+                    bestPerformanceVehicle = vehicleId;
+                }
+            });
+            
+            // Update UI
+            document.getElementById('bestValueVehicle').textContent = vehicleData[bestValueVehicle].name;
+            document.getElementById('bestPerformanceVehicle').textContent = vehicleData[bestPerformanceVehicle].name;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Readiness Scanner - Eastern Cape</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .progress-step {
+            transition: all 0.3s ease;
+        }
+        .progress-step.active {
+            background-color: #10B981;
+            color: white;
+        }
+        .progress-step.completed {
+            background-color: #10B981;
+            color: white;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .readiness-meter {
+            background: linear-gradient(to right, #EF4444, #F59E0B, #10B981);
+            height: 20px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .readiness-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width 1s ease;
+        }
+        .recommendation-card {
+            transition: all 0.3s ease;
+        }
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-charging-station text-white text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-gray-900">EC EV Readiness Scanner</h1>
+                        <p class="text-xs text-green-600">Eastern Cape Electric Mobility</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Route Optimizer</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition">Charging Stations</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 transition font-semibold">Readiness Scanner</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">EV Readiness Scanner</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Assess your home or business's readiness for electric vehicle adoption. Get personalized recommendations and cost estimates.
+            </p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="progress-step active rounded-full w-10 h-10 flex items-center justify-center font-semibold">1</div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="progress-step rounded-full w-10 h-10 flex items-center justify-center font-semibold bg-gray-300">2</div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="progress-step rounded-full w-10 h-10 flex items-center justify-center font-semibold bg-gray-300">3</div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="progress-step rounded-full w-10 h-10 flex items-center justify-center font-semibold bg-gray-300">4</div>
+            </div>
+            <div class="flex justify-between text-sm text-gray-600">
+                <span>Property Info</span>
+                <span>Electrical</span>
+                <span>Parking</span>
+                <span>Results</span>
+            </div>
+        </div>
+
+        <!-- Scanner Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <!-- Step 1: Property Information -->
+            <div id="step1" class="form-section active">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Property Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                        <select id="propertyType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select property type</option>
+                            <option value="residential">Residential</option>
+                            <option value="business">Business</option>
+                            <option value="multi-unit">Multi-unit Residential</option>
+                            <option value="industrial">Industrial</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Property Size</label>
+                        <select id="propertySize" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select size</option>
+                            <option value="small">Small (< 100m²)</option>
+                            <option value="medium">Medium (100-300m²)</option>
+                            <option value="large">Large (300-600m²)</option>
+                            <option value="xlarge">Extra Large (> 600m²)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Year Built</label>
+                        <input type="number" id="yearBuilt" min="1900" max="2025" placeholder="e.g., 2010" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input type="text" id="location" placeholder="City or suburb in Eastern Cape" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Number of Vehicles</label>
+                        <input type="number" id="vehicleCount" min="0" max="20" placeholder="How many vehicles do you have?" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button onclick="nextStep()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Electrical System -->
+            <div id="step2" class="form-section">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Electrical System Assessment</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Main Breaker Size (Amps)</label>
+                        <select id="mainBreaker" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select breaker size</option>
+                            <option value="60">60 Amps</option>
+                            <option value="100">100 Amps</option>
+                            <option value="150">150 Amps</option>
+                            <option value="200">200 Amps</option>
+                            <option value="400">400 Amps</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Available Panel Capacity (%)</label>
+                        <input type="range" id="panelCapacity" min="0" max="100" value="50" 
+                               class="w-full preference-slider">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0%</span>
+                            <span id="panelCapacityDisplay">50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Electrical Panel Location</label>
+                        <select id="panelLocation" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Where is your panel located?</option>
+                            <option value="garage">Garage</option>
+                            <option value="basement">Basement</option>
+                            <option value="utility">Utility Room</option>
+                            <option value="exterior">Exterior Wall</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Existing EV Outlet</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="evOutlet" value="yes" class="mr-2">
+                                <span>Yes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="evOutlet" value="no" class="mr-2" checked>
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Renewable Energy</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="hasSolar" class="mr-2">
+                                <span>Solar Panels</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="hasWind" class="mr-2">
+                                <span>Wind Turbine</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Electricity Bill (R)</label>
+                        <input type="number" id="electricityBill" min="0" placeholder="e.g., 1500" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between">
+                    <button onclick="previousStep()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <button onclick="nextStep()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Parking & Charging Setup -->
+            <div id="step3" class="form-section">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Parking & Charging Setup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Parking Type</label>
+                        <select id="parkingType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select parking type</option>
+                            <option value="garage">Attached Garage</option>
+                            <option value="detached-garage">Detached Garage</option>
+                            <option value="carport">Carport</option>
+                            <option value="driveway">Driveway</option>
+                            <option value="street">Street Parking</option>
+                            <option value="assigned">Assigned Parking Space</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Distance from Parking to Panel (meters)</label>
+                        <input type="number" id="distanceToPanel" min="0" max="100" placeholder="e.g., 15" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Dedicated Parking Space</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="dedicatedParking" value="yes" class="mr-2">
+                                <span>Yes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="dedicatedParking" value="no" class="mr-2" checked>
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Charging Preference</label>
+                        <select id="chargingPreference" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select preference</option>
+                            <option value="level1">Level 1 (Standard Outlet)</option>
+                            <option value="level2">Level 2 (240V)</option>
+                            <option value="dc-fast">DC Fast Charging</option>
+                            <option value="unsure">Not Sure</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
+                        <textarea id="additionalNotes" rows="3" placeholder="Any specific concerns or requirements?" 
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"></textarea>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between">
+                    <button onclick="previousStep()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <button onclick="calculateReadiness()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Calculate Readiness <i class="fas fa-calculator ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Results -->
+            <div id="step4" class="form-section">
+                <div id="loadingResults" class="text-center py-12">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-600">Analyzing your EV readiness...</p>
+                </div>
+                <div id="resultsContent" class="hidden">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6">Your EV Readiness Results</h3>
+                    
+                    <!-- Overall Readiness Score -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-gray-900">Overall Readiness Score</h4>
+                            <span id="readinessScore" class="text-3xl font-bold text-green-600">0%</span>
+                        </div>
+                        <div class="readiness-meter mb-4">
+                            <div id="readinessIndicator" class="readiness-indicator"></div>
+                        </div>
+                        <p id="readinessSummary" class="text-gray-700"></p>
+                    </div>
+
+                    <!-- Assessment Breakdown -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-bolt text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-gray-900">Electrical Capacity</h5>
+                                    <span id="electricalScore" class="text-2xl font-bold text-blue-600">0%</span>
+                                </div>
+                            </div>
+                            <p id="electricalStatus" class="text-sm text-gray-600"></p>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-car text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-gray-900">Parking Setup</h5>
+                                    <span id="parkingScore" class="text-2xl font-bold text-green-600">0%</span>
+                                </div>
+                            </div>
+                            <p id="parkingStatus" class="text-sm text-gray-600"></p>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-leaf text-yellow-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-gray-900">Sustainability</h5>
+                                    <span id="sustainabilityScore" class="text-2xl font-bold text-yellow-600">0%</span>
+                                </div>
+                            </div>
+                            <p id="sustainabilityStatus" class="text-sm text-gray-600"></p>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Recommended Actions</h4>
+                        <div id="recommendations" class="space-y-4">
+                            <!-- Recommendations will be dynamically inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Cost Estimates -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Estimated Costs</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Electrical Upgrades</span>
+                                    <span id="electricalCost" class="font-semibold">R0</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Charging Equipment</span>
+                                    <span id="equipmentCost" class="font-semibold">R0</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Installation</span>
+                                    <span id="installationCost" class="font-semibold">R0</span>
+                                </div>
+                                <div class="border-t pt-2 mt-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold">Total Estimated Cost</span>
+                                        <span id="totalCost" class="font-bold text-lg text-green-600">R0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Available Incentives</span>
+                                    <span id="incentives" class="font-semibold text-green-600">-R0</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Annual Savings</span>
+                                    <span id="annualSavings" class="font-semibold text-green-600">R0</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Payback Period</span>
+                                    <span id="paybackPeriod" class="font-semibold">0 years</span>
+                                </div>
+                                <div class="border-t pt-2 mt-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold">Net Cost After Incentives</span>
+                                        <span id="netCost" class="font-bold text-lg text-green-600">R0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="bg-blue-50 rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Next Steps</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button class="bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200">
+                                <i class="fas fa-download mr-2"></i> Download Full Report
+                            </button>
+                            <button class="bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200">
+                                <i class="fas fa-user-tie mr-2"></i> Consult with Electrician
+                            </button>
+                            <button class="bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg font-medium transition border border-gray-200">
+                                <i class="fas fa-calculator mr-2"></i> View Financing Options
+                            </button>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition">
+                                <i class="fas fa-shopping-cart mr-2"></i> Shop Charging Equipment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-charging-station text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">EC EV Scanner</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Assessing EV readiness for homes and businesses across the Eastern Cape.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Tools</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Readiness Scanner</li>
+                        <li>Route Optimizer</li>
+                        <li>Cost Calculator</li>
+                        <li>Incentive Finder</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Installation Guide</li>
+                        <li>Equipment Reviews</li>
+                        <li>FAQ</li>
+                        <li>Support</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <p class="text-gray-400 text-sm">
+                        Have questions? Our EV experts are here to help.
+                    </p>
+                    <button class="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        Get Support
+                    </button>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 EC EV Readiness Scanner. Supporting the Eastern Cape Automotive Masterplan 2035.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Panel capacity slider
+        document.getElementById('panelCapacity').addEventListener('input', function() {
+            document.getElementById('panelCapacityDisplay').textContent = this.value + '%';
+        });
+
+        function nextStep() {
+            if (validateCurrentStep()) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.add('completed');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.add('active');
+            }
+        }
+
+        function previousStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.querySelector(`.progress-step:nth-child(${currentStep * 2 - 1})`).classList.remove('completed');
+        }
+
+        function validateCurrentStep() {
+            const step = document.getElementById(`step${currentStep}`);
+            const requiredFields = step.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    field.classList.add('border-red-500');
+                    isValid = false;
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+
+            return isValid;
+        }
+
+        function calculateReadiness() {
+            if (!validateCurrentStep()) return;
+
+            // Show loading
+            document.getElementById('loadingResults').classList.remove('hidden');
+            document.getElementById('resultsContent').classList.add('hidden');
+
+            // Simulate calculation delay
+            setTimeout(() => {
+                const results = performReadinessCalculation();
+                displayResults(results);
+                
+                document.getElementById('loadingResults').classList.add('hidden');
+                document.getElementById('resultsContent').classList.remove('hidden');
+            }, 2000);
+        }
+
+        function performReadinessCalculation() {
+            // Get form data
+            const formData = {
+                propertyType: document.getElementById('propertyType').value,
+                propertySize: document.getElementById('propertySize').value,
+                yearBuilt: document.getElementById('yearBuilt').value,
+                location: document.getElementById('location').value,
+                vehicleCount: document.getElementById('vehicleCount').value,
+                mainBreaker: parseInt(document.getElementById('mainBreaker').value),
+                panelCapacity: parseInt(document.getElementById('panelCapacity').value),
+                panelLocation: document.getElementById('panelLocation').value,
+                evOutlet: document.querySelector('input[name="evOutlet"]:checked').value,
+                hasSolar: document.getElementById('hasSolar').checked,
+                hasWind: document.getElementById('hasWind').checked,
+                electricityBill: parseInt(document.getElementById('electricityBill').value),
+                parkingType: document.getElementById('parkingType').value,
+                distanceToPanel: parseInt(document.getElementById('distanceToPanel').value),
+                dedicatedParking: document.querySelector('input[name="dedicatedParking"]:checked').value,
+                chargingPreference: document.getElementById('chargingPreference').value,
+                additionalNotes: document.getElementById('additionalNotes').value
+            };
+
+            // Calculate scores
+            const electricalScore = calculateElectricalScore(formData);
+            const parkingScore = calculateParkingScore(formData);
+            const sustainabilityScore = calculateSustainabilityScore(formData);
+            
+            const overallScore = Math.round((electricalScore + parkingScore + sustainabilityScore) / 3);
+
+            // Generate recommendations
+            const recommendations = generateRecommendations(formData, electricalScore, parkingScore, sustainabilityScore);
+
+            // Calculate costs
+            const costs = calculateCosts(formData, recommendations);
+
+            return {
+                overallScore,
+                electricalScore,
+                parkingScore,
+                sustainabilityScore,
+                recommendations,
+                costs,
+                formData
+            };
+        }
+
+        function calculateElectricalScore(data) {
+            let score = 0;
+            
+            // Main breaker capacity
+            if (data.mainBreaker >= 200) score += 40;
+            else if (data.mainBreaker >= 150) score += 30;
+            else if (data.mainBreaker >= 100) score += 20;
+            else score += 10;
+
+            // Panel capacity
+            score += (data.panelCapacity / 100) * 30;
+
+            // Existing EV outlet
+            if (data.evOutlet === 'yes') score += 20;
+
+            // Panel location
+            if (data.panelLocation === 'garage') score += 10;
+            else if (data.panelLocation === 'exterior') score += 5;
+
+            return Math.min(100, Math.round(score));
+        }
+
+        function calculateParkingScore(data) {
+            let score = 0;
+
+            // Parking type
+            const parkingScores = {
+                'garage': 40,
+                'detached-garage': 35,
+                'carport': 30,
+                'driveway': 25,
+                'assigned': 20,
+                'street': 10
+            };
+            score += parkingScores[data.parkingType] || 0;
+
+            // Dedicated parking
+            if (data.dedicatedParking === 'yes') score += 30;
+
+            // Distance to panel
+            if (data.distanceToPanel <= 10) score += 20;
+            else if (data.distanceToPanel <= 20) score += 15;
+            else if (data.distanceToPanel <= 30) score += 10;
+            else score += 5;
+
+            return Math.min(100, Math.round(score));
+        }
+
+        function calculateSustainabilityScore(data) {
+            let score = 0;
+
+            // Renewable energy
+            if (data.hasSolar) score += 40;
+            if (data.hasWind) score += 20;
+
+            // Property type
+            if (data.propertyType === 'business') score += 20;
+            else if (data.propertyType === 'industrial') score += 15;
+
+            // Electricity bill (higher bills indicate more potential for savings)
+            if (data.electricityBill > 3000) score += 20;
+            else if (data.electricityBill > 1500) score += 15;
+            else if (data.electricityBill > 500) score += 10;
+
+            return Math.min(100, Math.round(score));
+        }
+
+        function generateRecommendations(data, electricalScore, parkingScore, sustainabilityScore) {
+            const recommendations = [];
+
+            // Electrical recommendations
+            if (electricalScore < 70) {
+                if (data.mainBreaker < 200) {
+                    recommendations.push({
+                        type: 'electrical',
+                        priority: 'high',
+                        title: 'Upgrade Electrical Panel',
+                        description: 'Consider upgrading to a 200-amp main breaker to support EV charging',
+                        cost: 8000,
+                        icon: 'fa-bolt'
+                    });
+                }
+                if (data.panelCapacity < 30) {
+                    recommendations.push({
+                        type: 'electrical',
+                        priority: 'high',
+                        title: 'Increase Panel Capacity',
+                        description: 'Free up space in your electrical panel for EV charger installation',
+                        cost: 5000,
+                        icon: 'fa-plug'
+                    });
+                }
+            }
+
+            // Parking recommendations
+            if (parkingScore < 60) {
+                if (data.parkingType === 'street') {
+                    recommendations.push({
+                        type: 'parking',
+                        priority: 'high',
+                        title: 'Install Dedicated Parking',
+                        description: 'Create a dedicated parking space with access to electrical supply',
+                        cost: 15000,
+                        icon: 'fa-parking'
+                    });
+                }
+                if (data.distanceToPanel > 30) {
+                    recommendations.push({
+                        type: 'parking',
+                        priority: 'medium',
+                        title: 'Install Sub-panel',
+                        description: 'Install a sub-panel closer to your parking area to reduce wiring costs',
+                        cost: 6000,
+                        icon: 'fa-box'
+                    });
+                }
+            }
+
+            // Charging equipment recommendations
+            if (data.evOutlet === 'no') {
+                recommendations.push({
+                    type: 'equipment',
+                    priority: 'high',
+                    title: 'Install EV Charger',
+                    description: 'Install a Level 2 charger for faster and more convenient charging',
+                    cost: 12000,
+                    icon: 'fa-charging-station'
+                });
+            }
+
+            // Sustainability recommendations
+            if (sustainabilityScore > 50 && !data.hasSolar) {
+                recommendations.push({
+                    type: 'sustainability',
+                    priority: 'medium',
+                    title: 'Add Solar Panels',
+                    description: 'Complement your EV with solar panels for maximum sustainability',
+                    cost: 45000,
+                    icon: 'fa-solar-panel'
+                });
+            }
+
+            return recommendations;
+        }
+
+        function calculateCosts(data, recommendations) {
+            const costs = {
+                electrical: 0,
+                equipment: 0,
+                installation: 0,
+                incentives: 0,
+                annualSavings: 0
+            };
+
+            recommendations.forEach(rec => {
+                if (rec.type === 'electrical') costs.electrical += rec.cost;
+                if (rec.type === 'equipment') costs.equipment += rec.cost;
+                if (rec.type === 'parking') costs.installation += rec.cost;
+            });
+
+            // Add installation cost for equipment
+            if (costs.equipment > 0) {
+                costs.installation += costs.equipment * 0.3; // 30% installation cost
+            }
+
+            // Calculate incentives (Eastern Cape specific)
+            costs.incentives = (costs.electrical + costs.equipment) * 0.25; // 25% incentive
+
+            // Calculate annual savings
+            if (data.electricityBill > 0) {
+                costs.annualSavings = data.electricityBill * 0.4; // 40% savings on electricity bill
+            }
+
+            costs.total = costs.electrical + costs.equipment + costs.installation;
+            costs.net = costs.total - costs.incentives;
+            costs.payback = costs.net / costs.annualSavings;
+
+            return costs;
+        }
+
+        function displayResults(results) {
+            // Update scores
+            document.getElementById('readinessScore').textContent = results.overallScore + '%';
+            document.getElementById('electricalScore').textContent = results.electricalScore + '%';
+            document.getElementById('parkingScore').textContent = results.parkingScore + '%';
+            document.getElementById('sustainabilityScore').textContent = results.sustainabilityScore + '%';
+
+            // Update readiness indicator
+            setTimeout(() => {
+                document.getElementById('readinessIndicator').style.width = results.overallScore + '%';
+            }, 100);
+
+            // Update summary text
+            let summary = '';
+            if (results.overallScore >= 80) {
+                summary = 'Excellent! Your property is well-prepared for EV adoption. Minor upgrades may be needed.';
+            } else if (results.overallScore >= 60) {
+                summary = 'Good! Your property shows promise for EV adoption with some recommended upgrades.';
+            } else if (results.overallScore >= 40) {
+                summary = 'Fair! Significant upgrades are needed to support EV charging at your property.';
+            } else {
+                summary = 'Poor! Major electrical and parking upgrades are required for EV readiness.';
+            }
+            document.getElementById('readinessSummary').textContent = summary;
+
+            // Update status texts
+            document.getElementById('electricalStatus').textContent = 
+                results.electricalScore >= 70 ? 'Ready for EV charging' : 
+                results.electricalScore >= 40 ? 'Upgrades needed' : 'Significant upgrades required';
+            
+            document.getElementById('parkingStatus').textContent = 
+                results.parkingScore >= 60 ? 'Suitable parking available' : 
+                results.parkingScore >= 30 ? 'Parking improvements needed' : 'Parking setup requires attention';
+            
+            document.getElementById('sustainabilityStatus').textContent = 
+                results.sustainabilityScore >= 50 ? 'Good sustainability potential' : 
+                'Consider renewable energy options';
+
+            // Display recommendations
+            const recommendationsContainer = document.getElementById('recommendations');
+            recommendationsContainer.innerHTML = '';
+            
+            results.recommendations.forEach(rec => {
+                const priorityColor = rec.priority === 'high' ? 'red' : rec.priority === 'medium' ? 'yellow' : 'green';
+                const card = document.createElement('div');
+                card.className = `recommendation-card bg-white border-l-4 border-${priorityColor}-500 p-4 rounded-lg shadow-sm`;
+                card.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-${priorityColor}-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas ${rec.icon} text-${priorityColor}-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-2">
+                                <h5 class="font-semibold text-gray-900">${rec.title}</h5>
+                                <span class="text-sm font-semibold text-gray-700">R${rec.cost.toLocaleString()}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">${rec.description}</p>
+                            <span class="inline-block px-2 py-1 text-xs font-medium bg-${priorityColor}-100 text-${priorityColor}-800 rounded">
+                                ${rec.priority.charAt(0).toUpperCase() + rec.priority.slice(1)} Priority
+                            </span>
+                        </div>
+                    </div>
+                `;
+                recommendationsContainer.appendChild(card);
+            });
+
+            // Display costs
+            document.getElementById('electricalCost').textContent = 'R' + results.costs.electrical.toLocaleString();
+            document.getElementById('equipmentCost').textContent = 'R' + results.costs.equipment.toLocaleString();
+            document.getElementById('installationCost').textContent = 'R' + results.costs.installation.toLocaleString();
+            document.getElementById('totalCost').textContent = 'R' + results.costs.total.toLocaleString();
+            document.getElementById('incentives').textContent = '-R' + results.costs.incentives.toLocaleString();
+            document.getElementById('annualSavings').textContent = 'R' + results.costs.annualSavings.toLocaleString();
+            document.getElementById('paybackPeriod').textContent = results.costs.payback.toFixed(1) + ' years';
+            document.getElementById('netCost').textContent = 'R' + results.costs.net.toLocaleString();
+        }
+    </script>
+</body>
+</html>
