@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Route Optimization System</title>
+    <title>EV Route Optimization System - Port Elizabeth</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -277,23 +277,30 @@
         .notification-close:hover {
             color: #000;
         }
+        .pe-highlight {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 2px solid #0d6efd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header text-center">
-            <h1><i class="bi bi-ev-station"></i> Premium EV Route Optimization System</h1>
-            <p class="mb-0">Real-time charging station status and recommendations</p>
+            <h1><i class="bi bi-ev-station"></i> EV Route Optimization System - Port Elizabeth</h1>
+            <p class="mb-0">Real-time charging station status and recommendations in Port Elizabeth</p>
             
             <div class="route-selector">
                 <div class="row align-items-center">
                     <div class="col-md-5">
                         <label for="start-point" class="form-label mb-0">Start Point:</label>
                         <select class="form-select" id="start-point">
-                            <option value="East London" selected>East London</option>
-                            <option value="King William's Town">King William's Town</option>
-                            <option value="Makhanda">Makhanda</option>
-                            <option value="Gqeberha">Gqeberha</option>
+                            <option value="PE Central" selected>PE Central</option>
+                            <option value="PE North">PE North</option>
+                            <option value="PE South">PE South</option>
+                            <option value="PE West">PE West</option>
                         </select>
                     </div>
                     <div class="col-md-2 text-center my-2 my-md-0">
@@ -302,16 +309,28 @@
                     <div class="col-md-5">
                         <label for="end-point" class="form-label mb-0">End Point:</label>
                         <select class="form-select" id="end-point">
-                            <option value="East London">East London</option>
-                            <option value="King William's Town">King William's Town</option>
-                            <option value="Makhanda">Makhanda</option>
-                            <option value="Gqeberha" selected>Gqeberha</option>
+                            <option value="PE Central">PE Central</option>
+                            <option value="PE North">PE North</option>
+                            <option value="PE South">PE South</option>
+                            <option value="PE West" selected>PE West</option>
                         </select>
                     </div>
                 </div>
             </div>
             
             <div class="last-updated" id="last-updated">Last updated: <span id="update-time"></span></div>
+        </div>
+
+        <div class="pe-highlight">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4><i class="bi bi-info-circle-fill"></i> Port Elizabeth EV Charging Network</h4>
+                    <p class="mb-0">Port Elizabeth offers a comprehensive network of EV charging stations across the city. With multiple locations in Central, North, South, and West districts, you'll always have access to charging facilities wherever you are in the city.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <i class="bi bi-ev-station-fill" style="font-size: 4rem; color: #0d6efd;"></i>
+                </div>
+            </div>
         </div>
 
         <div class="row" id="stations-container">
@@ -361,7 +380,7 @@
         </div>
 
         <div class="stats-section">
-            <h2><i class="bi bi-graph-up"></i> Network Statistics</h2>
+            <h2><i class="bi bi-graph-up"></i> PE Network Statistics</h2>
             <div class="row">
                 <div class="col-md-3">
                     <div class="stat-card">
@@ -442,54 +461,54 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Mock data for charging stations with coordinates
+        // Mock data for charging stations in Port Elizabeth
         const chargingStations = [
             {
-                name: "East London",
+                name: "PE Central",
                 status: "Online",
                 totalSlots: 8,
                 occupiedSlots: 5,
                 queueDetected: false,
                 avgWaitTimeMin: 0,
-                coordinates: [-33.0153, 27.9116]
+                coordinates: [-33.9608, 25.6022]
             },
             {
-                name: "King William's Town",
+                name: "PE North",
                 status: "Online",
                 totalSlots: 6,
                 occupiedSlots: 2,
                 queueDetected: false,
                 avgWaitTimeMin: 0,
-                coordinates: [-32.8792, 27.3925]
+                coordinates: [-33.9208, 25.6022]
             },
             {
-                name: "Makhanda",
+                name: "PE South",
                 status: "Online",
                 totalSlots: 4,
                 occupiedSlots: 4,
                 queueDetected: true,
                 avgWaitTimeMin: 15,
-                coordinates: [-33.3127, 26.5329]
+                coordinates: [-34.0008, 25.6022]
             },
             {
-                name: "Gqeberha",
+                name: "PE West",
                 status: "Offline",
                 totalSlots: 10,
                 occupiedSlots: 0,
                 queueDetected: false,
                 avgWaitTimeMin: 0,
-                coordinates: [-33.9608, 25.6022]
+                coordinates: [-33.9608, 25.5422]
             }
         ];
 
         // Define the order of stations for route mapping
-        const stationOrder = ["East London", "King William's Town", "Makhanda", "Gqeberha"];
+        const stationOrder = ["PE Central", "PE North", "PE South", "PE West"];
 
         // Store the currently selected station for booking
         let selectedStationForBooking = null;
 
-        // Initialize the map
-        let map = L.map('map').setView([-33.3, 27.0], 7);
+        // Initialize the map centered on Port Elizabeth
+        let map = L.map('map').setView([-33.9608, 25.6022], 12);
         
         // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -732,22 +751,23 @@
             const startIndex = stationOrder.indexOf(startPoint);
             const endIndex = stationOrder.indexOf(endPoint);
             
-            // Validate that start and end are different and in the correct order
-            if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
-                return '<p class="text-danger">Please select a valid route (start point must come before end point).</p>';
+            // Validate that start and end are different
+            if (startIndex === -1 || endIndex === -1 || startIndex === endIndex) {
+                return '<p class="text-danger">Please select different start and end points.</p>';
             }
             
             let routeHTML = '';
             
             // Generate the route from start to end
-            for (let i = startIndex; i <= endIndex; i++) {
-                const stationName = stationOrder[i];
+            const routeStations = [startPoint, endPoint];
+            for (let i = 0; i < routeStations.length; i++) {
+                const stationName = routeStations[i];
                 
                 // Add station
                 routeHTML += `<div class="route-station" id="route-${stationName.replace(/\s+/g, '-').toLowerCase()}">${stationName}</div>`;
                 
                 // Add line if not the last station
-                if (i < endIndex) {
+                if (i < routeStations.length - 1) {
                     routeHTML += '<div class="route-line"></div>';
                 }
             }
@@ -764,31 +784,23 @@
             const routeMapContainer = document.getElementById('route-map');
             routeMapContainer.innerHTML = generateRouteMap(startPoint, endPoint);
             
-            // Get the indices of start and end points
-            const startIndex = stationOrder.indexOf(startPoint);
-            const endIndex = stationOrder.indexOf(endPoint);
-            
-            // Validate that start and end are different and in the correct order
-            if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
+            // Validate that start and end are different
+            if (startPoint === endPoint) {
                 document.getElementById('best-station').innerHTML = `
                     <h4><i class="bi-exclamation-triangle"></i> Invalid Route</h4>
-                    <p>Please select a valid route (start point must come before end point).</p>
+                    <p>Please select different start and end points.</p>
                 `;
                 return;
             }
             
-            // Filter out offline stations and stations not on the route
-            const onlineStations = chargingStations.filter(station => 
-                station.status === "Online" && 
-                stationOrder.indexOf(station.name) >= startIndex && 
-                stationOrder.indexOf(station.name) <= endIndex
-            );
+            // Filter out offline stations
+            const onlineStations = chargingStations.filter(station => station.status === "Online");
             
-            // If no online stations on the route
+            // If no online stations
             if (onlineStations.length === 0) {
                 document.getElementById('best-station').innerHTML = `
                     <h4><i class="bi-exclamation-triangle"></i> No Suitable Charging Station</h4>
-                    <p>There are no online charging stations available along your route. Please consider an alternative route or charging strategy.</p>
+                    <p>There are no online charging stations available. Please try again later.</p>
                 `;
                 return;
             }
@@ -846,27 +858,17 @@
             const startPoint = document.getElementById('start-point').value;
             const endPoint = document.getElementById('end-point').value;
             
-            // Get the indices of start and end points
-            const startIndex = stationOrder.indexOf(startPoint);
-            const endIndex = stationOrder.indexOf(endPoint);
-            
-            // Validate that start and end are different and in the correct order
-            if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
-                return;
-            }
-            
             // Create route coordinates for polyline
             const routeCoordinates = [];
             
-            // Add markers for stations on the route
-            for (let i = startIndex; i <= endIndex; i++) {
-                const stationName = stationOrder[i];
+            // Add markers for start and end points
+            [startPoint, endPoint].forEach(stationName => {
                 const station = chargingStations.find(s => s.name === stationName);
                 
                 if (station) {
                     routeCoordinates.push(station.coordinates);
                     
-                    // Determine marker color based on station status and if it's the best station
+                    // Determine marker color based on station status and if it's start/end point
                     let markerColor;
                     if (stationName === startPoint) {
                         markerColor = '#0d6efd'; // Blue for start point
@@ -913,13 +915,13 @@
                     
                     markers[stationName] = marker;
                 }
-            }
+            });
             
             // Draw route polyline
-            routePolyline = L.polyline(routeCoordinates, { color: '#0d6efd', weight: 3, opacity: 0.7 }).addTo(map);
-            
-            // Fit map to show the entire route
-            if (routeCoordinates.length > 0) {
+            if (routeCoordinates.length > 1) {
+                routePolyline = L.polyline(routeCoordinates, { color: '#0d6efd', weight: 3, opacity: 0.7 }).addTo(map);
+                
+                // Fit map to show the entire route
                 map.fitBounds(routeCoordinates, { padding: [20, 20] });
             }
         }
@@ -1011,7 +1013,7 @@
                     }).addTo(map).bindPopup("Your Location");
                     
                     // Center map on user's location
-                    map.setView([lat, lng], 10);
+                    map.setView([lat, lng], 13);
                     
                     // Add notification
                     addNotification("Location Found", "Map centered on your current location.");
@@ -1038,7 +1040,7 @@
         setInterval(updateStationData, 30000);
 
         // Add initial notification
-        addNotification("Welcome", "Welcome to the EV Route Optimization System. Select your route to get started.");
+        addNotification("Welcome", "Welcome to the PE EV Charging Network. Select your route to get started.");
     </script>
 </body>
 </html>
